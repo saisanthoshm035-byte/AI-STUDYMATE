@@ -107,7 +107,7 @@ export default function LessonView({ lesson, onStartQuiz, onRegenerate, onTeachB
 
       {/* Common mistakes */}
       {lesson.commonMistakes.length > 0 && (
-        <section className="card animate-fade-up mt-4 border-bad-soft p-6" style={{ background: '#fff' }} aria-label="Common mistakes">
+        <section className="card animate-fade-up mt-4 border-bad-soft bg-bad-soft/40 p-6" aria-label="Common mistakes">
           <h2 className="flex items-center gap-2 font-display text-base font-bold text-ink">
             <AlertTriangle className="h-4.5 w-4.5 text-bad" aria-hidden="true" />
             Common mistakes
