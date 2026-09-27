@@ -1,0 +1,22 @@
+# Render.com blueprint — deploys AI StudyMate (API + frontend) as one service.
+# Go to https://dashboard.render.com → New → Blueprint → pick this repo.
+# You'll be prompted for the API keys at deploy time (they are never stored in git).
+services:
+  - type: web
+    name: ai-studymate
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash,gemini-flash-latest,gemini-3.8-flash
+      - key: NODE_VERSION
+        value: "22"

@@ -17,6 +17,14 @@ LEARN → TEST → DETECT → ADAPT → RETRY → MASTER
 5. **RETRY** — A brand-new question on the same concept checks whether the new explanation worked.
 6. **MASTER** — Improvement is measured, not assumed, and summarized in a final learning summary with XP earned.
 
+## 🧠 Intelligence layer (beyond the loop)
+
+- **Teach-Back AI** — after a lesson, students explain the topic in their own words. The AI analyzes *understanding* (not writing style): correctly understood / partially / misconceptions, identifies the single biggest learning gap, gives a targeted re-explanation, and generates 1–3 questions aimed exactly at that gap.
+- **Confidence Gap Detection** — each quiz question optionally collects stated confidence (😰 🤔 😎). Correct + confident = strong understanding; wrong + confident = 🚨 *potential misconception*; the post-quiz analysis shows a full confidence-vs-knowledge breakdown.
+- **Knowledge Retention Predictor** — a prototype decay model estimates per-concept retention (Today / Tomorrow / 3 days / 7 days) from quiz accuracy, confidence signals, misconceptions, teach-back results and review performance — and recommends which concept to review first, with a one-tap Quick Review.
+
+These three layers feed each other: quiz signals → teach-back repair → retention estimate → scheduled review → re-test.
+
 ## Tech stack
 
 - **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS v4 + lucide-react icons
@@ -44,6 +52,25 @@ Open http://localhost:5173
 npm run build   # builds the frontend into dist/
 npm start       # serves the API + built frontend on :8787
 ```
+
+## Deploying (full app with live AI)
+
+The app is **one Node process** that serves both the API and the built frontend,
+so it deploys anywhere Node runs. The repo ships with a Render blueprint:
+
+1. Push this repo to GitHub
+2. On [render.com](https://dashboard.render.com): **New → Blueprint** → pick the repo
+3. When prompted, paste your `GROQ_API_KEY` / `GEMINI_API_KEY` (stored as Render
+   env vars — never committed to git)
+4. Deploy. Done — one URL serves everything.
+
+> ⚠️ **Do not deploy only the frontend** (e.g. a plain Vercel static deploy):
+> the AI calls would 404 and the app would run on its built-in demo engine.
+> Keys must stay server-side; anything exposed to the browser is public.
+
+`render.yaml` configures build/start commands, the `/api/status` health check,
+and default model settings. The free tier sleeps after ~15 min idle; the first
+request after a wake-up takes ~30 extra seconds.
 
 ## AI providers
 
@@ -97,7 +124,9 @@ all degrade gracefully to the demo engine.
 │       ├── Progress.tsx      # History, stats, XP
 │       └── ErrorScreen.tsx   # Friendly error handling
 └── tests/
-    └── extractJson.test.ts   # Unit tests for AI response parsing
+    ├── extractJson.test.ts   # Unit tests for AI response parsing
+    ├── confidence.test.ts    # Confidence-vs-knowledge classification tests
+    └── retention.test.ts     # Retention decay heuristic tests
 ```
 
 ## Scripts
