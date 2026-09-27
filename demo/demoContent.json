@@ -1,0 +1,324 @@
+{
+  "lessons": [
+    {
+      "topic": "Photosynthesis",
+      "source": "demo",
+      "summary": "Photosynthesis is how plants make their own food. They capture sunlight with a green pigment called chlorophyll, take in carbon dioxide from the air and water from the soil, and convert them into glucose (a sugar that stores energy) and oxygen. It is the process that powers nearly every food chain on Earth.",
+      "keyConcepts": [
+        {
+          "title": "Chlorophyll & Light Absorption",
+          "explanation": "Chlorophyll is the green pigment inside chloroplasts. It absorbs sunlight — mainly red and blue light — and that light energy powers the whole process. This is why leaves look green: chlorophyll reflects green light instead of absorbing it."
+        },
+        {
+          "title": "Light-Dependent Reactions",
+          "explanation": "In the thylakoid membranes, absorbed light splits water molecules into oxygen, protons and electrons. This releases the oxygen we breathe and stores energy in molecules called ATP and NADPH."
+        },
+        {
+          "title": "Light-Independent Reactions (Calvin Cycle)",
+          "explanation": "In the stroma, the ATP and NADPH made earlier are used to build glucose from carbon dioxide. This stage does not need light directly — it needs the energy carriers made by the light reactions."
+        },
+        {
+          "title": "Inputs & Outputs",
+          "explanation": "The inputs are carbon dioxide, water and light energy. The outputs are glucose and oxygen. A simple way to remember it: 6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂."
+        },
+        {
+          "title": "Why Photosynthesis Matters",
+          "explanation": "Photosynthesis converts light energy into chemical energy that almost all life depends on. It produces the oxygen in our atmosphere and removes CO₂, forming the base of nearly every food chain."
+        }
+      ],
+      "realWorldExample": "Farmers add supplemental lighting in greenhouses to boost photosynthesis in winter. Houseplants grow toward windows to maximize light capture. And every spring, forests 'wake up' as longer days power rapid photosynthetic growth — measurable from space as the global CO₂ curve dips each summer.",
+      "analogy": "Think of a plant as a tiny solar-powered kitchen. Sunlight is the electricity, carbon dioxide and water are the raw ingredients, chlorophyll is the chef, and glucose is the meal it cooks — with oxygen as the steam drifting out the window.",
+      "commonMistakes": [
+        "Thinking plants only respire and never 'breathe' — they do BOTH photosynthesis and respiration.",
+        "Believing plants get their mass from soil. Most of a plant's mass actually comes from carbon dioxide in the air.",
+        "Saying photosynthesis happens at night. The light-dependent reactions need light; only the Calvin Cycle can continue briefly in the dark.",
+        "Confusing respiration (breaks glucose down for energy) with photosynthesis (builds glucose using light)."
+      ],
+      "quiz": [
+        {
+          "question": "Which pigment captures light energy for photosynthesis, and where is it found?",
+          "options": [
+            "Chlorophyll, inside chloroplasts",
+            "Hemoglobin, inside the roots",
+            "Melanin, in the cell wall",
+            "Keratin, in the leaf veins"
+          ],
+          "correctAnswer": 0,
+          "concept": "Chlorophyll & Light Absorption",
+          "explanation": "Chlorophyll is stored in chloroplasts and absorbs red and blue light, reflecting green — that's why leaves are green."
+        },
+        {
+          "question": "What is released as a by-product when water molecules are split during the light-dependent reactions?",
+          "options": [
+            "Carbon dioxide",
+            "Oxygen",
+            "Glucose",
+            "Nitrogen"
+          ],
+          "correctAnswer": 1,
+          "concept": "Light-Dependent Reactions",
+          "explanation": "Splitting water (photolysis) releases oxygen — the very oxygen we breathe comes from this step."
+        },
+        {
+          "question": "Which molecule does the Calvin Cycle use to build glucose?",
+          "options": [
+            "Oxygen",
+            "Water",
+            "Carbon dioxide",
+            "Chlorophyll"
+          ],
+          "correctAnswer": 2,
+          "concept": "Light-Independent Reactions (Calvin Cycle)",
+          "explanation": "The Calvin Cycle fixes carbon from CO₂, using ATP and NADPH from the light reactions to assemble glucose."
+        },
+        {
+          "question": "Which set of inputs does photosynthesis require?",
+          "options": [
+            "Glucose and oxygen",
+            "Carbon dioxide, water and light",
+            "Oxygen, glucose and chlorophyll",
+            "Nitrogen, water and heat"
+          ],
+          "correctAnswer": 1,
+          "concept": "Inputs & Outputs",
+          "explanation": "CO₂ and water are the raw materials and light is the energy source; glucose and oxygen come out."
+        },
+        {
+          "question": "Why does photosynthesis matter to almost all life on Earth?",
+          "options": [
+            "It keeps soil fertile by breaking down rocks",
+            "It converts light energy into food and oxygen for food chains",
+            "It produces nitrogen for the atmosphere",
+            "It cools the planet by reflecting sunlight"
+          ],
+          "correctAnswer": 1,
+          "concept": "Why Photosynthesis Matters",
+          "explanation": "It converts light energy into stored chemical energy (glucose) and produces oxygen — the base of nearly every food chain."
+        }
+      ],
+      "adaptive": [
+        {
+          "concept": "Chlorophyll & Light Absorption",
+          "approach": "Visual-style text explanation",
+          "explanation": "Picture a leaf as millions of tiny green antennas. Each antenna (a chlorophyll molecule) is tuned to catch sunlight the way a satellite dish catches a signal. Red and blue light are 'absorbed' — taken in as usable energy. Green light bounces off, and that reflected green is exactly the color your eyes see. So the leaf isn't green because it uses green light — it's green because it DOESN'T.",
+          "keyIdea": "Chlorophyll absorbs red and blue light to power photosynthesis and reflects the green we see."
+        },
+        {
+          "concept": "Light-Dependent Reactions",
+          "approach": "Step-by-step breakdown",
+          "explanation": "Step 1: Light strikes chlorophyll in the thylakoid membranes. Step 2: That energy splits water molecules (H₂O) apart. Step 3: Splitting water releases oxygen gas (O₂) — the by-product. Step 4: The leftover electrons and protons are packed into energy carriers, ATP and NADPH, which fuel the next stage. So the oxygen you breathe is literally the 'exhaust' of this light-powered step.",
+          "keyIdea": "Light splits water; oxygen is released and energy is stored in ATP and NADPH."
+        },
+        {
+          "concept": "Light-Independent Reactions (Calvin Cycle)",
+          "approach": "Real-world analogy",
+          "explanation": "The Calvin Cycle is like a bakery that assembles bread from flour delivered each morning. The flour is carbon dioxide from the air. The delivery vans are ATP and NADPH, made by the light reactions earlier in the day. The bakery itself never needs sunlight — but it can only bake because the vans brought energy while the sun was up. Glucose is the finished loaf that stores that energy.",
+          "keyIdea": "The Calvin Cycle uses CO₂ plus ATP/NADPH (from light reactions) to build glucose — light is needed only to make the carriers."
+        },
+        {
+          "concept": "Inputs & Outputs",
+          "approach": "Simple explanation",
+          "explanation": "Forget memorizing the full equation for a moment — just track three things IN and two things OUT. In: carbon dioxide (from air), water (from soil), and light (from the sun). Out: glucose (energy stored as sugar) and oxygen (released to the air). If an option lists glucose or oxygen as an input, it has the arrows backwards.",
+          "keyIdea": "CO₂ + H₂O + light go in; glucose + O₂ come out."
+        },
+        {
+          "concept": "Why Photosynthesis Matters",
+          "approach": "Example-based explanation",
+          "explanation": "Follow a cheeseburger backwards: the cow ate grass, the grass grew by photosynthesis. Every calorie on your plate traces back to a plant (or plankton) capturing sunlight. Photosynthesis also fills the atmosphere with oxygen — about 20% of the air — and pulls CO₂ out of it. Remove photosynthesis and food chains collapse within a generation.",
+          "keyIdea": "Photosynthesis converts sunlight into food and oxygen, anchoring nearly every ecosystem."
+        }
+      ],
+      "retryQuestions": [
+        {
+          "question": "A leaf looks green to your eye. What does that tell you about chlorophyll?",
+          "options": [
+            "It absorbs green light strongly",
+            "It reflects green light while absorbing red and blue",
+            "It emits green photons it creates itself",
+            "It stores green light for later use"
+          ],
+          "correctAnswer": 1,
+          "concept": "Chlorophyll & Light Absorption",
+          "explanation": "The color we see is the light that bounces off. Chlorophyll keeps red and blue for energy and reflects green."
+        },
+        {
+          "question": "Where does the oxygen released by photosynthesis originally come from?",
+          "options": [
+            "Carbon dioxide molecules",
+            "Glucose molecules",
+            "Water molecules split by light energy",
+            "Soil minerals absorbed by roots"
+          ],
+          "correctAnswer": 2,
+          "concept": "Light-Dependent Reactions",
+          "explanation": "Light energy splits water (H₂O); the oxygen atoms from water are released as O₂ gas."
+        },
+        {
+          "question": "On a dark night, can the Calvin Cycle in a leaf still build glucose?",
+          "options": [
+            "No — every stage of photosynthesis needs direct sunlight",
+            "Yes, briefly — it can run on ATP and NADPH already made during the day",
+            "Yes, and it releases extra oxygen while doing so",
+            "No — glucose can only be made during sunrise"
+          ],
+          "correctAnswer": 1,
+          "concept": "Light-Independent Reactions (Calvin Cycle)",
+          "explanation": "The Calvin Cycle doesn't use light directly — it runs on the energy carriers made during daylight."
+        },
+        {
+          "question": "A student says: 'Plants take in soil to gain mass.' What is the flaw in this claim?",
+          "options": [
+            "Plants actually take in oxygen to gain mass",
+            "Most of a plant's mass comes from carbon dioxide in the air, fixed during photosynthesis",
+            "Plants gain mass only at night",
+            "Soil contributes most of a plant's glucose"
+          ],
+          "correctAnswer": 1,
+          "concept": "Inputs & Outputs",
+          "explanation": "The carbon atoms in a plant's tissue come from atmospheric CO₂ — photosynthesis fixes them into glucose."
+        },
+        {
+          "question": "Which statement best explains why almost every food chain starts with photosynthetic organisms?",
+          "options": [
+            "They are the largest organisms in the ecosystem",
+            "They convert light energy into chemical energy others can eat",
+            "They produce the carbon dioxide animals need",
+            "They keep the soil warm for other organisms"
+          ],
+          "correctAnswer": 1,
+          "concept": "Why Photosynthesis Matters",
+          "explanation": "Producers convert sunlight into glucose — the chemical energy every consumer in the chain ultimately eats."
+        }
+      ]
+    },
+    {
+      "topic": "Binary Search",
+      "source": "demo",
+      "summary": "Binary search is a fast algorithm for finding an item in a SORTED list. Instead of checking every element one by one, it compares the target with the middle element, discards half the list each step, and repeats. That halving is what makes it dramatically faster than linear search.",
+      "keyConcepts": [
+        {
+          "title": "The Sorted Requirement",
+          "explanation": "Binary search only works on sorted data. Discarding half the list is only safe if 'too small' really means the target is to the left and 'too big' means it's to the right — a guarantee that sorting provides."
+        },
+        {
+          "title": "Halving the Search Space",
+          "explanation": "Each comparison eliminates half of the remaining elements. A million-element list takes at most about 20 steps, because 1,000,000 ≈ 2²⁰. This is the O(log n) time complexity."
+        },
+        {
+          "title": "Low / High / Midpoint Logic",
+          "explanation": "Two pointers, low and high, bracket the region that could still contain the target. The middle element is compared with the target: if the target is larger, move low past mid; if smaller, move high before mid; if equal, you've found it."
+        }
+      ],
+      "realWorldExample": "Opening a physical dictionary at the middle and jumping forward or backward instead of flipping page by page. The 'guess the number between 1 and 100' game where the optimal strategy is always guessing the midpoint. Git's bisect command uses binary search over commits to find a bug.",
+      "analogy": "Finding a name in a phone book: you never start at page 1. You open the middle, see whether your target is earlier or later, and throw away the useless half instantly — repeating until you land on the page.",
+      "commonMistakes": [
+        "Running binary search on an unsorted list and expecting correct results.",
+        "Off-by-one errors: forgetting mid ± 1 and re-checking the same element forever.",
+        "Saying binary search is O(n) — it's O(log n), which is far faster.",
+        "Confusing it with linear search, which checks every element but works on unsorted data."
+      ],
+      "quiz": [
+        {
+          "question": "What is the essential precondition for binary search to work correctly?",
+          "options": [
+            "The list must contain unique numbers only",
+            "The list must be sorted",
+            "The list must have an even number of elements",
+            "The list must be stored in a linked structure"
+          ],
+          "correctAnswer": 1,
+          "concept": "The Sorted Requirement",
+          "explanation": "Halving is only safe when order tells you which half the target must be in — that's what sorting guarantees."
+        },
+        {
+          "question": "Searching a sorted list of 1,000,000 items, what is the maximum number of comparisons binary search needs (approximately)?",
+          "options": [
+            "1,000",
+            "50",
+            "20",
+            "1,000,000"
+          ],
+          "correctAnswer": 2,
+          "concept": "Halving the Search Space",
+          "explanation": "Each step halves the space; 2²⁰ ≈ 1,000,000, so about 20 comparisons suffice — O(log n)."
+        },
+        {
+          "question": "The target is greater than the middle element. What does binary search do next?",
+          "options": [
+            "Moves the low pointer to mid + 1 and keeps searching the right half",
+            "Moves the high pointer to mid - 1 and searches the left half",
+            "Restarts the search from the beginning",
+            "Switches to linear search on the whole list"
+          ],
+          "correctAnswer": 0,
+          "concept": "Low / High / Midpoint Logic",
+          "explanation": "If the target is bigger than mid, everything at or before mid can be discarded — set low = mid + 1."
+        }
+      ],
+      "adaptive": [
+        {
+          "concept": "The Sorted Requirement",
+          "approach": "Example-based explanation",
+          "explanation": "Try it with an unsorted list: [7, 2, 9, 4]. Search for 2. The middle is 9 — bigger than 2, so a naive binary search throws away the RIGHT half. But 2 was in the right half all along. The algorithm eliminated the wrong half because without sorting, 'smaller than mid' says nothing about position. Sorting is what turns position comparisons into elimination rules.",
+          "keyIdea": "Binary search's halving trick is only valid on sorted data — sorting is the guarantee that lets half the list be discarded."
+        },
+        {
+          "concept": "Halving the Search Space",
+          "approach": "Step-by-step breakdown",
+          "explanation": "Step 1: 1,000,000 → check middle, discard half → 500,000 left. Step 2: → 250,000. Step 3: → 125,000. After 10 steps you're down to ~1,000; after 20 you're down to 1. Halving is a logarithm in disguise: the number of steps is log₂(n). Compare that with linear search checking all 1,000,000 — 50,000× more work.",
+          "keyIdea": "Each comparison halves the remaining elements, so steps grow as log₂(n) — about 20 steps for a million items."
+        },
+        {
+          "concept": "Low / High / Midpoint Logic",
+          "approach": "Visual-style text explanation",
+          "explanation": "Visualize the array as a shrinking window: [L ..... H]. Mid is the dot in the center of the window. If target > mid: everything from L to mid is dead — the window snaps shut to [mid+1 ... H]. If target < mid: the window snaps to [L ... mid-1]. The window never grows back. When target == mid, the dot IS the answer.",
+          "keyIdea": "low/high bracket the still-possible region; each comparison moves one bracket past mid, shrinking the window."
+        }
+      ],
+      "retryQuestions": [
+        {
+          "question": "You binary-search for 2 in the unsorted list [7, 2, 9, 4]. What goes wrong?",
+          "options": [
+            "The algorithm crashes because the list is too small",
+            "The algorithm may discard the half that actually contains 2",
+            "The algorithm returns 2 immediately",
+            "Nothing — binary search works on any list"
+          ],
+          "correctAnswer": 1,
+          "concept": "The Sorted Requirement",
+          "explanation": "Without sorting, comparing with the middle tells you nothing about which half holds the target — wrong half, wrong result."
+        },
+        {
+          "question": "How many times can you halve a 64-item list before you're down to a single item?",
+          "options": [
+            "6 times (log₂ 64 = 6)",
+            "32 times",
+            "8 times",
+            "64 times"
+          ],
+          "correctAnswer": 0,
+          "concept": "Halving the Search Space",
+          "explanation": "64 → 32 → 16 → 8 → 4 → 2 → 1: six halvings, exactly log₂(64)."
+        },
+        {
+          "question": "During a binary search, low = 0, high = 10, mid = 5, and the target is smaller than the element at mid. What is the new search window?",
+          "options": [
+            "low = 0, high = 4",
+            "low = 6, high = 10",
+            "low = 5, high = 10",
+            "low = 0, high = 10"
+          ],
+          "correctAnswer": 0,
+          "concept": "Low / High / Midpoint Logic",
+          "explanation": "Target smaller than mid means the answer can only be left of mid: high moves to mid - 1 = 4."
+        }
+      ]
+    }
+  ],
+  "defaultAdaptive": {
+    "concept": "General understanding",
+    "approach": "Simple explanation",
+    "explanation": "Let's look at this differently. Instead of memorizing the answer, break the idea into its smallest parts and see how each one connects to the next. Start from what you already know, add one piece at a time, and check that each step makes sense before moving on. Understanding grows fastest when every link in the chain is solid.",
+    "keyIdea": "Build understanding piece by piece — connect each new idea to one you already know."
+  }
+}

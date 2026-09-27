@@ -1,0 +1,483 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Lexend", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0f172a;
+  --color-ink-soft: #475569;
+  --color-ink-faint: #94a3b8;
+  --color-line: #e2e8f0;
+  --color-canvas: #f6f7fb;
+  --color-paper: #ffffff;
+
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+
+  --color-accent-50: #ecfeff;
+  --color-accent-100: #cffafe;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+
+  --color-good: #059669;
+  --color-good-soft: #ecfdf5;
+  --color-good-line: #a7f3d0;
+  --color-bad: #dc2626;
+  --color-bad-soft: #fef2f2;
+  --color-bad-line: #fecaca;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(15 23 42 / 0.05), 0 16px 40px -16px rgb(15 23 42 / 0.18);
+
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-pop: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+  --animate-float-slow: float-slow 9s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-14px) scale(1.04); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@layer components {
+  .card {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+    cursor: pointer;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%);
+    color: #fff;
+    box-shadow: 0 8px 20px -8px rgb(79 70 229 / 0.6);
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 12px 26px -8px rgb(79 70 229 / 0.75);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: #fff;
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    border-color: var(--color-brand-200);
+    background: var(--color-brand-50);
+  }
+
+  .btn-xl { padding: 0.9rem 1.75rem; font-size: 1.05rem; }
+  .btn-lg { padding: 0.7rem 1.4rem; font-size: 0.95rem; }
+  .btn-md { padding: 0.55rem 1.1rem; font-size: 0.9rem; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    color: var(--color-ink-soft);
+  }
+}
+
+@keyframes progress-stripe {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+@layer components {
+  .progress-stripe {
+    background-image: linear-gradient(
+      45deg,
+      rgb(255 255 255 / 0.25) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgb(255 255 255 / 0.25) 50%,
+      rgb(255 255 255 / 0.25) 75%,
+      transparent 75%
+    );
+    background-size: 1rem 1rem;
+    animation: progress-stripe 0.9s linear infinite;
+  }
+}
+
+/* ===========================================================================
+   SF (Sci-Fi / 2026) landing-page layer — scoped to .sf-page so the rest of
+   the app keeps its existing light theme untouched.
+   =========================================================================== */
+
+.sf-page {
+  background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(79, 70, 229, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 10% 30%, rgba(6, 182, 212, 0.10), transparent 55%),
+    #070b14;
+  color: #e2e8f0;
+}
+
+.sf-hero {
+  background: radial-gradient(900px 480px at 30% -20%, rgba(99, 102, 241, 0.22), transparent 60%);
+}
+
+.sf-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 100%);
+}
+
+.sf-float { animation: sf-float 11s ease-in-out infinite; }
+@keyframes sf-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -22px, 0) scale(1.05); }
+}
+
+.sf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgb(203 213 225);
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  backdrop-filter: blur(8px);
+}
+.sf-badge-hot {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(8, 145, 178, 0.9));
+  border-color: rgba(165, 180, 252, 0.5);
+  box-shadow: 0 4px 24px -6px rgba(79, 70, 229, 0.7);
+}
+
+.sf-shimmer {
+  background: linear-gradient(100deg, #a5b4fc 0%, #67e8f9 30%, #e0e7ff 50%, #67e8f9 70%, #a5b4fc 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sf-shimmer 5.5s ease-in-out infinite;
+}
+@keyframes sf-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.sf-btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0891b2 120%);
+  color: #fff;
+  border: 1px solid rgba(165, 180, 252, 0.35);
+  box-shadow: 0 10px 34px -10px rgba(79, 70, 229, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.sf-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 14px 44px -10px rgba(99, 102, 241, 1), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.sf-btn-ghost {
+  background: rgba(148, 163, 184, 0.07);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  backdrop-filter: blur(8px);
+}
+.sf-btn-ghost:hover:not(:disabled) {
+  border-color: rgba(103, 232, 249, 0.55);
+  background: rgba(103, 232, 249, 0.08);
+}
+
+.sf-stat {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(148, 163, 184, 0.06);
+  padding: 0.7rem 0.85rem;
+  backdrop-filter: blur(6px);
+}
+
+.sf-glass {
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: linear-gradient(160deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.65));
+  box-shadow: 0 24px 70px -28px rgba(79, 70, 229, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.sf-live-dot {
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: #34d399;
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+  animation: sf-ping 2s ease-out infinite;
+}
+@keyframes sf-ping {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); }
+  80%, 100% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+}
+
+.sf-strip {
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.sf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgb(203 213 225);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.07);
+}
+.sf-chip-good {
+  color: rgb(110 231 183);
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.sf-card {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: linear-gradient(170deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.55));
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.sf-card:hover {
+  border-color: rgba(129, 140, 248, 0.45);
+  box-shadow: 0 20px 50px -24px rgba(79, 70, 229, 0.55);
+}
+.sf-card-hot {
+  border-color: rgba(129, 140, 248, 0.4);
+  background: linear-gradient(170deg, rgba(49, 46, 129, 0.35), rgba(8, 51, 68, 0.45));
+  box-shadow: 0 24px 70px -30px rgba(79, 70, 229, 0.7);
+}
+
+.sf-topic {
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(203 213 225);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.sf-topic:hover {
+  color: #fff;
+  border-color: rgba(103, 232, 249, 0.7);
+  background: rgba(8, 145, 178, 0.15);
+  box-shadow: 0 0 22px -4px rgba(34, 211, 238, 0.5);
+  transform: translateY(-1px);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+.reveal.shown {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .sf-float, .sf-shimmer, .sf-live-dot { animation: none; }
+}
+
+/* ===========================================================================
+   SF navbar — dark glass floating bar shared across all screens.
+   Wrapped in @layer components so Tailwind utilities (e.g. `hidden` on the
+   AI badge) still override these rules on small screens.
+   =========================================================================== */
+
+@layer components {
+.sf-nav {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(7, 11, 20, 0.72);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 8px 32px -18px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+/* thin animated aurora edge under the bar */
+.sf-nav::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(129, 140, 248, 0.7) 30%, rgba(34, 211, 238, 0.7) 55%, rgba(167, 139, 250, 0.7) 75%, transparent 100%);
+  background-size: 220% 100%;
+  animation: sf-edge 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes sf-edge {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+
+.sf-logo-tile {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #0891b2 130%);
+  box-shadow: 0 6px 20px -6px rgba(99, 102, 241, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.sf-navlink {
+  color: rgb(203 213 225);
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.sf-navlink:hover {
+  color: #fff;
+  background: rgba(148, 163, 184, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+}
+
+.sf-aibadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgb(226 232 240);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.08);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+}
+/* end @layer components (sf navbar) */
+
+/* ===========================================================================
+   SF interior theme — flips the whole app to the dark futuristic look by
+   overriding Tailwind v4 theme tokens on the app root (.sf-app). Utilities
+   like text-ink / bg-brand-50 / border-line all read these vars, so every
+   screen rethemes at once without touching component code.
+   =========================================================================== */
+
+.sf-app {
+  --color-canvas: #070b14;
+  --color-paper: #0e1626;
+  --color-ink: #e6ebf4;
+  --color-ink-soft: #9aa8bf;
+  --color-ink-faint: #6b7a93;
+  --color-line: #223049;
+
+  --color-brand-50: rgba(99, 102, 241, 0.16);
+  --color-brand-100: rgba(129, 140, 248, 0.24);
+  --color-brand-200: rgba(129, 140, 248, 0.4);
+  --color-brand-700: #b3bdfa;
+
+  --color-accent-50: rgba(34, 211, 238, 0.10);
+  --color-accent-100: rgba(34, 211, 238, 0.22);
+  --color-accent-600: #67e8f9;
+
+  --color-good: #34d399;
+  --color-good-soft: rgba(52, 211, 153, 0.12);
+  --color-good-line: rgba(52, 211, 153, 0.38);
+
+  --color-bad: #f87171;
+  --color-bad-soft: rgba(248, 113, 113, 0.12);
+  --color-bad-line: rgba(248, 113, 113, 0.38);
+
+  --color-amber-50: rgba(251, 191, 36, 0.10);
+  --color-amber-100: rgba(251, 191, 36, 0.18);
+  --color-amber-200: rgba(251, 191, 36, 0.32);
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+
+  --color-emerald-900: #a7f3d0;
+  --color-red-900: #fecaca;
+  --color-slate-100: #1b2740;
+
+  min-height: 100vh;
+  color: var(--color-ink);
+  background:
+    radial-gradient(1100px 520px at 75% -8%, rgba(79, 70, 229, 0.14), transparent 60%),
+    radial-gradient(800px 420px at 8% 25%, rgba(6, 182, 212, 0.08), transparent 55%),
+    #070b14;
+}
+
+/* Hardcoded light surfaces inside the app get dark equivalents. */
+.sf-app .bg-white { background-color: #0e1626; }
+.sf-app .card { box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.85); }
+.sf-app .pill {
+  background: rgba(148, 163, 184, 0.08);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+.sf-app .btn-ghost {
+  background: rgba(148, 163, 184, 0.07);
+  color: #e6ebf4;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+.sf-app .btn-ghost:hover:not(:disabled) {
+  border-color: rgba(103, 232, 249, 0.5);
+  background: rgba(103, 232, 249, 0.08);
+}
+.sf-app .sf-nav {
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
