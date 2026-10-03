@@ -133,7 +133,7 @@ function AssistantChat({ assessment }: { assessment: RplAssessment | null }) {
 }
 
 interface Props {
-  onStartNew: (demo: boolean) => void;
+  onStartNew: () => void;
   onOpenAssessment: (id: string) => void;
   onDeleteAssessment: (id: string) => void;
   onOpenAssessor: () => void;
@@ -147,7 +147,7 @@ export default function RplDashboard({ onStartNew, onOpenAssessment, onDeleteAss
   useEffect(() => setAssessments(loadAssessments()), [section]);
 
   const handleCard = (id: string) => {
-    if (id === 'new') return onStartNew(false);
+    if (id === 'new') return onStartNew();
     if (id === 'my') return setSection('my');
     if (id === 'profile') return setSection('profile');
     if (id === 'evidence') return setSection('evidence');
@@ -172,9 +172,9 @@ export default function RplDashboard({ onStartNew, onOpenAssessment, onDeleteAss
             AI-assisted assessment of skills gained through work experience, informal learning, training and prior education.
           </p>
         </div>
-        <button onClick={() => onStartNew(true)} className="btn sf-btn-ghost btn-lg">
+        <button onClick={() => onStartNew()} className="btn btn-primary btn-lg">
           <PlayCircle className="h-5 w-5" aria-hidden="true" />
-          Try Demo Assessment
+          Start RPL Assessment
         </button>
       </div>
 
@@ -209,7 +209,6 @@ export default function RplDashboard({ onStartNew, onOpenAssessment, onDeleteAss
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-ink">{a.roleName || 'Untitled role'}</span>
-                    {a.demo && <span className="pill border-amber-200 bg-amber-50 text-[11px] text-amber-700">DEMO</span>}
                     <StatusPill s={a.status} />
                     {a.readiness && <span className="pill border-good-line bg-good-soft text-[11px] text-good">{a.readiness.overall}% ready</span>}
                   </div>
@@ -225,7 +224,7 @@ export default function RplDashboard({ onStartNew, onOpenAssessment, onDeleteAss
                 </div>
               </li>
             ))}
-            {assessments.length === 0 && <li className="text-sm text-ink-soft">No assessments yet. Start your first one — or try the demo.</li>}
+            {assessments.length === 0 && <li className="text-sm text-ink-soft">No assessments yet. Start your first one.</li>}
           </ul>
         </section>
       )}

@@ -37,15 +37,6 @@ export function AiDisclaimer({ text = RPL_DISCLAIMER }: { text?: string }) {
   );
 }
 
-export function DemoRibbon({ show }: { show: boolean }) {
-  if (!show) return null;
-  return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-xs font-bold tracking-wide text-amber-700">
-      DEMO DATA — NOT REAL CANDIDATE INFORMATION
-    </div>
-  );
-}
-
 function Bar({ label, value }: { label: string; value: number }) {
   return (
     <div>
@@ -63,7 +54,7 @@ function Bar({ label, value }: { label: string; value: number }) {
 interface Props {
   assessment: RplAssessment;
   analyzing: boolean;
-  source: 'ai' | 'demo' | null;
+  source: 'ai' | 'local' | null;
   onContinue: () => void;
   onRegenerate: () => void;
 }
@@ -88,10 +79,8 @@ export default function SkillAnalysis({ assessment, analyzing, source, onContinu
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <DemoRibbon show={!!assessment.demo} />
-
       {/* AI Skill Analysis */}
-      <section className="card mt-4 p-6 sm:p-8">
+      <section className="card p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="font-display text-2xl font-extrabold text-ink">AI Skill Analysis</h1>

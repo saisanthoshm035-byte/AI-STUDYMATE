@@ -4,7 +4,6 @@ import {
 } from 'lucide-react';
 import type { RplAssessment } from '../../rpl/types';
 import { RPL_DISCLAIMER, RPL_READINESS_DISCLAIMER } from '../../rpl/types';
-import { DemoRibbon } from './SkillAnalysis';
 
 /** Minimal dependency-free SVG radar chart for competency coverage. */
 function Radar({ items }: { items: { label: string; value: number }[] }) {
@@ -107,11 +106,9 @@ export default function RplResults({ assessment, reportLoading, onGenerateReport
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <DemoRibbon show={!!assessment.demo} />
-
       {/* ============ SKILL GAP ============ */}
       {gaps && (
-        <section className="card mt-4 p-6 sm:p-8">
+        <section className="card p-6 sm:p-8">
           <h1 className="font-display text-2xl font-extrabold text-ink">Your Skill Gap</h1>
           <p className="mt-1 text-sm text-ink-soft">Based on your experience, evidence and assessment answers for {assessment.roleName}.</p>
 
@@ -220,7 +217,7 @@ export default function RplResults({ assessment, reportLoading, onGenerateReport
             <header className="rounded-xl border border-line bg-paper p-5">
               <h3 className="font-display text-lg font-extrabold text-ink">RPL Skill Assessment Report</h3>
               <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-                <div><dt className="inline font-semibold text-ink">Candidate: </dt><dd className="inline text-ink-soft">{assessment.profile.fullName || '—'}{assessment.demo ? ' (DEMO)' : ''}</dd></div>
+                <div><dt className="inline font-semibold text-ink">Candidate: </dt><dd className="inline text-ink-soft">{assessment.profile.fullName || '—'}</dd></div>
                 <div><dt className="inline font-semibold text-ink">Target Occupation: </dt><dd className="inline text-ink-soft">{assessment.roleName}</dd></div>
                 <div><dt className="inline font-semibold text-ink">Experience: </dt><dd className="inline text-ink-soft">{assessment.profile.yearsExperience || '—'} years</dd></div>
                 <div><dt className="inline font-semibold text-ink">Date: </dt><dd className="inline text-ink-soft">{new Date(assessment.updatedAt).toLocaleDateString()}</dd></div>

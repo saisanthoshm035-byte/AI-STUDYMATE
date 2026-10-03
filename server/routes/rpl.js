@@ -4,7 +4,7 @@
  * Purely additive: imports the shared callLLM/extractJson helpers from the
  * existing ai.js router module and mounts under /api/rpl/*. Every endpoint
  * answers with a valid payload even when no AI provider is configured or the
- * provider fails — the built-in heuristic engine keeps the demo flow alive.
+ * provider fails — the built-in heuristic engine keeps the assessment flow alive.
  *
  * AI rules honored here: label AI output as preliminary, never claim official
  * certification, distinguish claimed vs evidenced skills, flag uncertainty
@@ -190,7 +190,7 @@ function fallbackReport(payload) {
       notYet.length ? `Gather more evidence for: ${notYet.map((m) => m.competency).join(', ')}.` : 'Prepare for a practical demonstration of skills.',
       'Consider short skilling courses for the identified learning gaps.',
     ],
-    source: 'demo',
+    source: 'local',
     model: 'Built-in assessment engine',
   };
 }
@@ -254,7 +254,7 @@ If support is weak, use confidence "Needs evidence" and say what evidence would 
     res.json({ skills, source: 'ai', model: aiStatus().model });
   } catch (err) {
     console.error('[rpl/skills] AI call failed, using fallback:', err.message);
-    res.json({ skills: fallbackSkills(competencies, experience, evidenceNames), source: 'demo', model: 'Built-in assessment engine' });
+    res.json({ skills: fallbackSkills(competencies, experience, evidenceNames), source: 'local', model: 'Built-in assessment engine' });
   }
 });
 
@@ -326,7 +326,7 @@ Scenario/Situational questions must have 4 options with a clearly best answer. E
     res.json({ questions, source: 'ai', model: aiStatus().model });
   } catch (err) {
     console.error('[rpl/questions] AI call failed, using fallback:', err.message);
-    res.json({ questions: fallbackQuestions(role, competencies, weakCompetencies, language, 5), source: 'demo', model: 'Built-in assessment engine' });
+    res.json({ questions: fallbackQuestions(role, competencies, weakCompetencies, language, 5), source: 'local', model: 'Built-in assessment engine' });
   }
 });
 
@@ -380,7 +380,7 @@ Return JSON with EXACTLY this shape:
     res.json({ evaluation, source: 'ai', model: aiStatus().model });
   } catch (err) {
     console.error('[rpl/evaluate] AI call failed, using fallback:', err.message);
-    res.json({ evaluation: fallbackEvaluation({ competency, guidance }, answer), source: 'demo', model: 'Built-in assessment engine' });
+    res.json({ evaluation: fallbackEvaluation({ competency, guidance }, answer), source: 'local', model: 'Built-in assessment engine' });
   }
 });
 
@@ -499,7 +499,7 @@ Return JSON with EXACTLY this shape:
     res.json({ answer, source: 'ai', model: aiStatus().model });
   } catch (err) {
     console.error('[rpl/assistant] AI call failed, using fallback:', err.message);
-    res.json({ answer: fallbackAssistantAnswer(question, context), source: 'demo', model: 'Built-in assessment engine' });
+    res.json({ answer: fallbackAssistantAnswer(question, context), source: 'local', model: 'Built-in assessment engine' });
   }
 });
 

@@ -37,13 +37,12 @@ export function RplStepper({ step }: { step: number }) {
 
 interface Props {
   assessment: RplAssessment;
-  demo?: boolean;
   onChange: (a: RplAssessment) => void;
   onAnalyze: () => void;
   onExit: () => void;
 }
 
-export default function RplWizard({ assessment, demo, onChange, onAnalyze, onExit }: Props) {
+export default function RplWizard({ assessment, onChange, onAnalyze, onExit }: Props) {
   const [step, setStep] = useState(0); // 0 profile, 1 role, 2 experience, 3 evidence
   const [roleQuery, setRoleQuery] = useState('');
   const [fileError, setFileError] = useState<string | null>(null);
@@ -118,13 +117,7 @@ export default function RplWizard({ assessment, demo, onChange, onAnalyze, onExi
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      {demo && (
-        <div className="card border-amber-200 bg-amber-50/50 p-4 text-sm font-semibold text-amber-700">
-          DEMO DATA — NOT REAL CANDIDATE INFORMATION. Everything is pre-filled with a sample candidate (Arun Kumar, Electrician, 5 years).
-        </div>
-      )}
-
-      <div className="card mt-4 p-6 sm:p-8">
+      <div className="card p-6 sm:p-8">
         <RplStepper step={Math.min(step === 0 ? 0 : step <= 2 ? 1 : 2, 5)} />
         <div className="mt-6">
           {step === 0 && (
@@ -331,7 +324,6 @@ export default function RplWizard({ assessment, demo, onChange, onAnalyze, onExi
                         <div className="truncate text-sm font-semibold text-ink">{e.name}</div>
                         <div className="mt-0.5 text-xs text-ink-faint">
                           {e.kind} · {e.date}{e.fileSize ? ` · ${(e.fileSize / 1024).toFixed(0)} KB` : ''}
-                          {e.demo ? ' · DEMO DATA' : ''}
                         </div>
                       </div>
                     </div>

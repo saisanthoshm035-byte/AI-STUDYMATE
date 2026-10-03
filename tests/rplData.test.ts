@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { RPL_ROLES, getRole } from '../src/rpl/roles';
-import { RPL_DEMO_QUESTIONS, RPL_DEMO_PROFILE, RPL_DEMO_EXPERIENCE, RPL_DEMO_EVIDENCE } from '../src/rpl/demo';
+import { RPL_FALLBACK_QUESTIONS } from '../src/rpl/fallbackQuestions';
 
 describe('RPL role frameworks', () => {
   it('includes every occupation from the spec', () => {
@@ -36,39 +36,22 @@ describe('RPL role frameworks', () => {
   });
 });
 
-describe('RPL demo data (spec section 18)', () => {
-  it('is the mandated sample candidate', () => {
-    expect(RPL_DEMO_PROFILE.fullName).toBe('Arun Kumar');
-    expect(RPL_DEMO_PROFILE.occupation).toBe('Electrician');
-    expect(RPL_DEMO_PROFILE.yearsExperience).toBe('5');
-  });
-
-  it('covers the mandated demo skills', () => {
-    const text = RPL_DEMO_EXPERIENCE.toLowerCase();
-    for (const s of ['wiring', 'maintenance', 'fault', 'safety']) {
-      expect(text).toContain(s);
-    }
-  });
-
-  it('has sample evidence of mixed types', () => {
-    const kinds = RPL_DEMO_EVIDENCE.map((e) => e.kind);
-    expect(kinds).toContain('Experience Letter');
-    expect(kinds).toContain('Image');
-    expect(kinds).toContain('Certificate');
-  });
-
-  it('demo questions are 5 and include experience-based + scenario types', () => {
-    expect(RPL_DEMO_QUESTIONS.length).toBe(5);
-    const types = RPL_DEMO_QUESTIONS.map((q) => q.type);
+describe('RPL built-in fallback questions', () => {
+  it('provides 5 questions covering scenario, situational and experience-based types', () => {
+    expect(RPL_FALLBACK_QUESTIONS.length).toBe(5);
+    const types = RPL_FALLBACK_QUESTIONS.map((q) => q.type);
     expect(types).toContain('Experience-based');
     expect(types.filter((t) => t === 'Scenario').length).toBeGreaterThanOrEqual(1);
     expect(types).toContain('Situational');
-    // Exactly one experience-based (open) question; others have 4 options.
-    for (const q of RPL_DEMO_QUESTIONS) {
+    // The open experience-based question has no options; the rest have exactly 4.
+    for (const q of RPL_FALLBACK_QUESTIONS) {
       if (q.type === 'Experience-based') {
         expect(q.options.length).toBe(0);
+        expect(q.correctAnswer).toBe(-1);
       } else {
         expect(q.options.length).toBe(4);
+        expect(q.correctAnswer).toBeGreaterThanOrEqual(0);
+        expect(q.correctAnswer).toBeLessThan(4);
       }
     }
   });

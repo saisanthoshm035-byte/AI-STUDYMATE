@@ -1,5 +1,4 @@
-import type { RplAssessment, RplEvidenceItem } from './types';
-import { RPL_DEMO_EVIDENCE, RPL_DEMO_EXPERIENCE, RPL_DEMO_PROFILE } from './demo';
+import type { RplAssessment } from './types';
 
 const KEY = 'studymate.rpl.assessments.v1';
 const ACTIVE_KEY = 'studymate.rpl.active.v1';
@@ -74,14 +73,13 @@ export function clearActiveDraft(): void {
   }
 }
 
-export function newAssessment(demo = false): RplAssessment {
+export function newAssessment(): RplAssessment {
   return {
     id: makeId(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
     status: 'draft',
-    demo,
-    profile: demo ? { ...RPL_DEMO_PROFILE } : { fullName: '', age: '', location: '', education: '', occupation: '', yearsExperience: '', employmentType: '', language: 'English' },
+    profile: { fullName: '', age: '', location: '', education: '', occupation: '', yearsExperience: '', employmentType: '', language: 'English' },
     roleId: '',
     roleName: '',
     competencies: [],
@@ -96,17 +94,6 @@ export function newAssessment(demo = false): RplAssessment {
     report: null,
     assessorReview: null,
   };
-}
-
-/** Demo assessment: pre-filled Arun Kumar data, marked DEMO everywhere. */
-export function newDemoAssessment(): RplAssessment {
-  const a = newAssessment(true);
-  a.roleId = 'electrician';
-  a.roleName = 'Electrician';
-  a.competencies = ['Electrical Safety', 'Wiring', 'Circuit Installation', 'Equipment Handling', 'Fault Diagnosis', 'Maintenance', 'Tools & Instruments'];
-  a.experience.text = RPL_DEMO_EXPERIENCE;
-  a.evidence = RPL_DEMO_EVIDENCE.map((e) => ({ ...e, id: makeId('ev') })) as unknown as RplEvidenceItem[];
-  return a;
 }
 
 /** Aggregate platform stats for the admin view (computed on-device). */

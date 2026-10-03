@@ -27,7 +27,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 // All RPL AI calls follow the same contract as the StudyMate ones: the server
 // always answers with a valid payload (AI or built-in fallback), so the UI
-// never breaks mid-demo. A thrown error means a transport problem.
+// never breaks mid-assessment. A thrown error means a transport problem.
 export const rplApi = {
   extractSkills(input: {
     role: string;

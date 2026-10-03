@@ -31,7 +31,6 @@ export interface RplEvidenceItem {
   fileName?: string;
   fileType?: string;
   fileSize?: number;
-  demo?: boolean;
 }
 
 export interface CandidateProfile {
@@ -137,7 +136,7 @@ export interface RplReport {
   intro: string;
   sections: RplReportSection[];
   nextSteps: string[];
-  source: 'ai' | 'demo';
+  source: 'ai' | 'local';
   model: string;
 }
 
@@ -148,7 +147,6 @@ export interface RplAssessment {
   createdAt: number;
   updatedAt: number;
   status: RplAssessmentStatus;
-  demo?: boolean;
   profile: CandidateProfile;
   roleId: string;
   roleName: string;

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import RplDashboard from './RplDashboard';
 import RplWizard from './RplWizard';
-import SkillAnalysis, { DemoRibbon } from './SkillAnalysis';
+import SkillAnalysis from './SkillAnalysis';
 import RplQuestionCard from './RplQuestionCard';
 import RplResults from './RplResults';
 import AssessorConsole from './AssessorConsole';
@@ -13,7 +13,6 @@ import {
   getAssessment,
   loadActiveDraft,
   newAssessment,
-  newDemoAssessment,
   saveActiveDraft,
   saveAssessment,
 } from '../../rpl/storage';
@@ -38,7 +37,7 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
   const [phase, setPhase] = useState<Phase>(startInAssessor ? 'assessor' : 'dashboard');
   const [assessment, setAssessment] = useState<RplAssessment | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysisSource, setAnalysisSource] = useState<'ai' | 'demo' | null>(null);
+  const [analysisSource, setAnalysisSource] = useState<'ai' | 'local' | null>(null);
   const [evaluating, setEvaluating] = useState(false);
   const [currentEval, setCurrentEval] = useState<AnswerEvaluation | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
@@ -61,11 +60,11 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
   }, []);
 
   const startNew = useCallback(
-    (demo: boolean) => {
-      const a = demo ? newDemoAssessment() : newAssessment();
+    () => {
+      const a = newAssessment();
       persist(a);
       setCurrentEval(null);
-      setPhase(demo ? 'wizard' : 'wizard');
+      setPhase('wizard');
     },
     [persist],
   );
@@ -79,7 +78,12 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
       // Route to the right place based on how far it got.
       if (a.status === 'draft') setPhase('wizard');
       else if (a.report || a.readiness) setPhase('results');
-      else if (a.skills.length > 0) setPhase('analysis');
+      else if (a.questions.length > 0 && Object.keys(a.answers ?? {}).length > 0) {
+        // Mid-quiz refresh: resume at the first unanswered question.
+        const idx = a.questions.findIndex((q) => !a.answers[q.id]);
+        setQIndex(idx >= 0 ? idx : 0);
+        setPhase('questions');
+      } else if (a.skills.length > 0) setPhase('analysis');
       else setPhase('wizard');
     },
     [],
@@ -98,7 +102,7 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
       setAnalyzing(true);
       setAnalysisSource(null);
       let skills = a.skills;
-      let source: 'ai' | 'demo' = 'demo';
+      let source: 'ai' | 'local' = 'local';
       try {
         const res = await rplApi.extractSkills({
           role: a.roleName,
@@ -107,10 +111,10 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
           evidenceNames: a.evidence.map((e) => `${e.name} (${e.kind})`),
         });
         skills = res.skills;
-        source = (res as { source?: 'ai' | 'demo' }).source === 'ai' ? 'ai' : 'demo';
+        source = (res as { source?: 'ai' | 'local' }).source === 'ai' ? 'ai' : 'local';
       } catch {
         skills = localSkillExtraction(a.experience, a.competencies);
-        source = 'demo';
+        source = 'local';
       }
       const next: RplAssessment = {
         ...a,
@@ -148,9 +152,9 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
           setAssessment(next);
           saveAssessment(next);
         } catch {
-          // Transport-level failure: keep the demo flow alive with built-in questions.
-          const { RPL_DEMO_QUESTIONS } = await import('../../rpl/demo');
-          const questions: RplQuestion[] = RPL_DEMO_QUESTIONS.map((q, i) => ({
+          // Transport-level failure: keep the assessment moving with the built-in question set.
+          const { RPL_FALLBACK_QUESTIONS } = await import('../../rpl/fallbackQuestions');
+          const questions: RplQuestion[] = RPL_FALLBACK_QUESTIONS.map((q, i) => ({
             ...q,
             id: `q${i + 1}`,
           })) as unknown as RplQuestion[];
@@ -289,7 +293,6 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
     return (
       <RplWizard
         assessment={assessment}
-        demo={assessment.demo}
         onChange={(a) => persist(a)}
         onAnalyze={() => void runAnalysis(assessment)}
         onExit={exitToDashboard}
@@ -315,7 +318,6 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
       // Questions failed to load entirely — recover gracefully.
       return (
         <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-          <DemoRibbon show={!!assessment.demo} />
           <p className="mt-4 text-ink-soft">Questions could not be loaded. Please try again.</p>
           <button onClick={() => { const a = { ...assessment, questions: [] }; setAssessment(a); saveAssessment(a); void startQuestions(a); }} className="btn btn-primary btn-lg mt-4">Retry</button>
         </div>
@@ -323,7 +325,6 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
     }
     return (
       <>
-        <DemoRibbon show={!!assessment.demo} />
         <div className="mx-auto max-w-2xl px-4 pt-6">
           <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow={qIndex} aria-valuemin={0} aria-valuemax={assessment.questions.length}>
             <div className="h-full rounded-full bg-gradient-to-r from-brand-600 to-accent-500 transition-all" style={{ width: `${((qIndex + (currentEval ? 1 : 0)) / assessment.questions.length) * 100}%` }} />
@@ -349,7 +350,7 @@ export default function RplApp({ startInAssessor = false }: { onHome: () => void
       assessment={assessment}
       reportLoading={reportLoading}
       onGenerateReport={() => void generateReport()}
-      onRestart={() => startNew(false)}
+      onRestart={() => startNew()}
       onDashboard={() => setPhase('dashboard')}
     />
   );

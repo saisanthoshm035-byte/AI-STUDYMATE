@@ -64,7 +64,7 @@ function CandidateDetail({ a, onClose }: { a: RplAssessment; onClose: () => void
       <section className="card mt-4 p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-display text-2xl font-extrabold text-ink">{a.profile.fullName || 'Unnamed candidate'}{a.demo ? ' (DEMO)' : ''}</h1>
+            <h1 className="font-display text-2xl font-extrabold text-ink">{a.profile.fullName || 'Unnamed candidate'}</h1>
             <p className="mt-1 text-sm text-ink-soft">
               {a.roleName} · {a.profile.yearsExperience || '?'} years experience · {a.profile.education || 'education not stated'} · {a.profile.location}
             </p>
@@ -73,7 +73,6 @@ function CandidateDetail({ a, onClose }: { a: RplAssessment; onClose: () => void
           {a.readiness && <div className="text-right"><div className="font-display text-4xl font-extrabold text-brand-600">{a.readiness.overall}%</div><div className="text-[11px] text-ink-faint">AI readiness indicator</div></div>}
         </div>
 
-        {a.demo && <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-xs font-bold text-amber-700">DEMO DATA — NOT REAL CANDIDATE INFORMATION</div>}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div>
@@ -251,7 +250,6 @@ export default function AssessorConsole({ onExit }: { onExit?: () => void }) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-semibold text-ink">{a.profile.fullName || 'Unnamed'}</span>
-                {a.demo && <span className="pill border-amber-200 bg-amber-50 text-[11px] text-amber-700">DEMO</span>}
                 <span className="pill text-[11px]">{a.roleName}</span>
                 {a.mappings.some((m) => m.status === 'Evidence Required' || m.status === 'Not Yet Demonstrated') && (
                   <span className="pill border-amber-200 bg-amber-50 text-[11px] text-amber-700">Flagged for review</span>
@@ -268,7 +266,7 @@ export default function AssessorConsole({ onExit }: { onExit?: () => void }) {
             </div>
           </li>
         ))}
-        {filtered.length === 0 && <li className="text-sm text-ink-soft">No assessments found. Run the demo assessment first, then review it here.</li>}
+        {filtered.length === 0 && <li className="text-sm text-ink-soft">No assessments found. Candidates appear here after they complete the skill analysis step.</li>}
       </ul>
     </div>
   );
