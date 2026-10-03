@@ -5,6 +5,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import aiRouter from './routes/ai.js';
+import rplRouter from './routes/rpl.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
 app.use('/api', aiRouter);
+app.use('/api/rpl', rplRouter);
 
 // Serve the built frontend in production (npm run build && npm start)
 const distDir = path.resolve(__dirname, '../dist');

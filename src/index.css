@@ -134,6 +134,24 @@ select:focus-visible {
     background: #fff;
     color: var(--color-ink-soft);
   }
+
+  .input {
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    padding: 0.6rem 0.85rem;
+    font-size: 0.925rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input::placeholder { color: var(--color-ink-faint); }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-brand-500, #6366f1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  }
 }
 
 @keyframes progress-stripe {
@@ -463,6 +481,19 @@ select:focus-visible {
 
 /* Hardcoded light surfaces inside the app get dark equivalents. */
 .sf-app .bg-white { background-color: #0e1626; }
+
+/* Print styles: clean PDF export for the RPL report (Download Report as PDF). */
+@media print {
+  body { background: #fff !important; color: #111 !important; }
+  .sf-app { background: #fff !important; min-height: auto; }
+  .sf-app .sf-nav, header.sf-nav { display: none !important; }
+  .card { border: 1px solid #ddd !important; box-shadow: none !important; background: #fff !important; }
+  .report-doc { color: #111; }
+  .report-doc .text-ink { color: #111 !important; }
+  .report-doc .text-ink-soft { color: #333 !important; }
+  button { display: none !important; }
+  .report-doc footer { background: #fef9c3 !important; border-color: #f59e0b !important; }
+}
 .sf-app .card { box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.85); }
 .sf-app .pill {
   background: rgba(148, 163, 184, 0.08);

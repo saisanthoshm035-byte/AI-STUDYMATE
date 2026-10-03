@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight, BookOpen, BrainCircuit, ChevronRight, FlaskConical, Lightbulb,
   MousePointerClick, RefreshCw, Search, ShieldCheck, Sparkles, Target, Zap,
+  Award, Compass, FileSearch, GraduationCap, Radar,
 } from 'lucide-react';
 import Hero3D from './Hero3D';
 import type { AiStatus } from '../types';
@@ -10,6 +11,7 @@ interface LandingProps {
   status: AiStatus | null;
   onStart: () => void;
   onPickTopic: (topic: string) => void;
+  onGoRpl: () => void;
 }
 
 const CYCLE = [
@@ -70,7 +72,7 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-export default function Landing({ status, onStart, onPickTopic }: LandingProps) {
+export default function Landing({ status, onStart, onPickTopic, onGoRpl }: LandingProps) {
   const live = status?.configured ?? false;
 
   return (
@@ -287,10 +289,97 @@ export default function Landing({ status, onStart, onPickTopic }: LandingProps) 
         </div>
       </section>
 
+      {/* ================= RPL SECTION ================= */}
+      <section id="rpl" className="relative py-24">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[10%] top-10 h-[22rem] w-[22rem] rounded-full bg-emerald-500/10 blur-[100px] sf-float" style={{ animationDelay: '1s' }} />
+          <div className="absolute right-[8%] bottom-0 h-[20rem] w-[20rem] rounded-full bg-indigo-600/15 blur-[100px]" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <Reveal>
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="sf-badge">
+                <Award className="h-3.5 w-3.5 text-emerald-300" aria-hidden="true" />
+                New · AI-Assisted Skill Assessment for RPL
+              </span>
+              <h2 className="mt-5 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Have skills but no formal qualification?
+              </h2>
+              <p className="mt-3 text-lg text-slate-300/90">
+                Your experience matters. Turn your experience into recognized skills.
+              </p>
+              <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-400">
+                AI-assisted assessment of skills gained through work experience, informal learning, training and prior education.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { icon: Compass, label: 'Discover', desc: 'AI profiles your prior learning' },
+              { icon: Radar, label: 'Map', desc: 'Skills mapped to the occupational framework' },
+              { icon: Target, label: 'Assess', desc: 'Adaptive questions that follow your level' },
+              { icon: FileSearch, label: 'Identify Gaps', desc: 'See what evidence is missing' },
+              { icon: GraduationCap, label: 'Prepare', desc: 'Ready for the real RPL assessment' },
+            ].map((s, i) => (
+              <Reveal key={s.label} delay={i * 80}>
+                <div className="sf-card h-full p-5 text-center">
+                  <s.icon className="mx-auto h-6 w-6 text-emerald-300" aria-hidden="true" />
+                  <div className="mt-2.5 font-display text-sm font-extrabold text-white">{s.label}</div>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-400">{s.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={200}>
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-3.5">
+              <button onClick={onGoRpl} className="sf-btn-primary btn btn-xl">
+                Start RPL Assessment
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <a href="#rpl-how" className="sf-btn-ghost btn btn-xl">
+                Explore How RPL Works
+              </a>
+            </div>
+            <p className="mt-5 text-center text-xs text-slate-500">
+              AI-assisted preliminary assessment — final competency decisions are made by authorized human assessors.
+            </p>
+          </Reveal>
+
+          {/* How RPL works detail */}
+          <div id="rpl-how" className="mx-auto mt-20 max-w-3xl">
+            <Reveal>
+              <h3 className="text-center font-display text-2xl font-extrabold text-white">How RPL works here</h3>
+            </Reveal>
+            <div className="mt-8 space-y-4">
+              {[
+                { n: '1', t: 'Describe your experience', d: 'Jobs, apprenticeships, self-learning, family business work — in your own words, plus optional evidence documents.' },
+                { n: '2', t: 'AI extracts your skills', d: 'Technical skills, tools, processes and knowledge areas — each labeled with a confidence level and what supports it.' },
+                { n: '3', t: 'Competency mapping', d: 'Your skills are mapped against your occupation\'s competency framework — demonstrated, partial, or evidence required.' },
+                { n: '4', t: 'Adaptive skill assessment', d: 'MCQ, scenario, situational and experience-based questions. Difficulty adapts to your answers. Answer by text or voice.' },
+                { n: '5', t: 'Gap analysis + readiness', d: 'A transparent readiness indicator shows what is strong, what needs more evidence, and what to learn next.' },
+                { n: '6', t: 'Report + human assessment', d: 'Download an AI-assisted preliminary report and take it to an authorized RPL assessor — the final decision stays human.' },
+              ].map((s, i) => (
+                <Reveal key={s.n} delay={i * 60}>
+                  <div className="sf-card flex items-start gap-4 p-5">
+                    <span className="sf-logo-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-display text-sm font-extrabold text-white">{s.n}</span>
+                    <div>
+                      <div className="font-display font-bold text-white">{s.t}</div>
+                      <p className="mt-1 text-sm leading-relaxed text-slate-400">{s.d}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ================= FOOTER ================= */}
       <footer className="sf-strip py-7">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-[13px] text-slate-500 sm:flex-row sm:px-6">
-          <span>AI StudyMate — Learn. Test. Adapt. Master.</span>
+          <span>AI StudyMate — Learn. Test. Adapt. Master. · Now with RPL Skill Assessment: Turn Your Experience Into Recognized Skills.</span>
           <span>It learns from your mistakes and changes how it teaches.</span>
         </div>
       </footer>

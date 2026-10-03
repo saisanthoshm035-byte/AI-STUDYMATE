@@ -86,7 +86,10 @@ export type Screen =
   | 'error'
   | 'teachback'
   | 'retention'
-  | 'review';
+  | 'review'
+  // RPL skill assessment layer (additive — existing screens untouched)
+  | 'rpl'
+  | 'assessor';
 
 // ---------------------------------------------------------------------------
 // Intelligence layer (additive): confidence, teach-back, retention

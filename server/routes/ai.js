@@ -202,7 +202,7 @@ function pickModel(provider, attempt) {
   return models[(attempt - 1) % models.length];
 }
 
-async function callLLM(system, user) {
+export async function callLLM(system, user) {
   const providers = detectProviders();
   if (providers.length === 0) throw new Error('NO_PROVIDER');
 
