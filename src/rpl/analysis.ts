@@ -4,7 +4,9 @@ import type {
   ExtractedSkill,
   RplAnswers,
   RplAssessment,
+  RplDifficulty,
   RplQuestion,
+  RplQuestionType,
   ReadinessBreakdown,
   SkillGap,
 } from './types';
@@ -239,4 +241,70 @@ export function evaluateAnswerLocally(
         ? 'Your answer covers the key points an assessor would look for. Add specific details from your own work to strengthen the evidence.'
         : 'A stronger answer would mention more of the key steps or considerations. Think about what a senior colleague would check first.',
   };
+}
+
+// ---------------------------------------------------------------------------
+// Built-in per-competency MCQ generator: keeps a self-paced competency
+// assessment alive when the AI question engine is unreachable.
+// ---------------------------------------------------------------------------
+
+const LOCAL_COMPETENCY_QUESTIONS: RplQuestionType[] = ['MCQ', 'Scenario', 'Experience-based'];
+
+export function localCompetencyQuestions(
+  role: string,
+  competency: string,
+  experienceText: string,
+  count: number,
+): RplQuestion[] {
+  const exp = experienceText.trim();
+  return Array.from({ length: count }, (_, i): RplQuestion => {
+    const type: RplQuestionType = LOCAL_COMPETENCY_QUESTIONS[i % LOCAL_COMPETENCY_QUESTIONS.length];
+    const difficulty: RplDifficulty = i === 0 ? 'Beginner' : i === count - 1 ? 'Advanced' : 'Intermediate';
+    if (type === 'MCQ') {
+      return {
+        id: '',
+        type: 'MCQ',
+        competency,
+        difficulty,
+        prompt: `Which habit best shows real competence in ${competency} as a ${role}?`,
+        options: [
+          `Following the standard safe procedure for ${competency.toLowerCase()}, checking your work as you go`,
+          'Relying on memory and fixing problems only when something goes wrong',
+          'Copying whatever the previous worker did without checking',
+          'Skipping preparation steps to finish faster',
+        ],
+        correctAnswer: 0,
+        guidance: `A competent practitioner follows the standard, safe procedure for ${competency} and verifies each step.`,
+      };
+    }
+    if (type === 'Scenario') {
+      return {
+        id: '',
+        type: 'Scenario',
+        competency,
+        difficulty,
+        prompt: `Something goes wrong while you are using ${competency.toLowerCase()} on a job as a ${role}. What do you do first?`,
+        options: [
+          'Stop, make the situation safe, then work through the steps of the standard procedure for this problem',
+          'Try the quickest workaround and check the result later if time allows',
+          'Ask a colleague to take over the whole task',
+          'Continue as planned and only record the problem at the end of the day',
+        ],
+        correctAnswer: 0,
+        guidance: `Strong answers show safe, systematic problem handling in ${competency}: make it safe first, then follow a clear diagnostic order.`,
+      };
+    }
+    return {
+      id: '',
+      type: 'Experience-based',
+      competency,
+      difficulty,
+      prompt: exp
+        ? `From your own work, describe one job where you used ${competency.toLowerCase()}. What did you do, step by step?`
+        : `Describe how you normally use ${competency.toLowerCase()} in your work as a ${role}, step by step.`,
+      options: [],
+      correctAnswer: -1,
+      guidance: `A strong answer describes concrete steps, tools and checks from the candidate's own experience with ${competency}.`,
+    };
+  });
 }

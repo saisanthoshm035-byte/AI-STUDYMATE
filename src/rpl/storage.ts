@@ -87,10 +87,12 @@ export function newAssessment(): RplAssessment {
     evidence: [],
     skills: [],
     mappings: [],
+    competencyRuns: {},
     questions: [],
     answers: {},
     gaps: null,
     readiness: null,
+    combined: null,
     report: null,
     assessorReview: null,
   };

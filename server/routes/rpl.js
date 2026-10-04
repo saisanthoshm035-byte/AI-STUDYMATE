@@ -264,12 +264,45 @@ router.post('/questions', async (req, res) => {
   const weakCompetencies = listOf(req.body?.weakCompetencies);
   const experienceText = str(req.body?.experienceText);
   const language = str(req.body?.language, 'English');
+  // Per-competency batches ask for a small count; the classic full set stays 5.
+  const count = Math.max(1, Math.min(6, Math.round(Number(req.body?.count) || 5)));
 
   if (!role || competencies.length === 0) {
     return res.status(400).json({ error: 'Role and competencies are required.' });
   }
 
-  const userPrompt = `Create an adaptive skill assessment for a ${role} candidate for Recognition of Prior Learning (RPL).
+  const perCompetency = count <= 3 && competencies.length === 1;
+  const userPrompt = perCompetency
+    ? `Create a short skill assessment for a ${role} candidate for Recognition of Prior Learning (RPL).
+
+This batch assesses exactly ONE competency from the occupational framework: "${competencies[0]}".
+${weakCompetencies.length ? `This competency has weaker evidence so far — probe it a little deeper.` : ''}
+Candidate's experience summary (personalize the experience-based question with it):
+"""
+${experienceText.slice(0, 800) || '(none provided)'}
+"""
+
+Generate exactly ${count} questions, all about "${competencies[0]}":
+- 1 MCQ (multiple-choice, 4 options, one correct)
+- 1 Scenario question (a realistic workplace problem involving this competency, 4 options with one clearly best answer)
+- 1 Experience-based question (ask them to describe something from THEIR OWN work with this competency, no options)
+
+Difficulty: start at Beginner and end at Advanced. Questions must be answerable by an experienced practitioner WITHOUT formal education, in plain language.${language !== 'English' ? ` Write the questions in ${language} (keep the competency name in English).` : ''}
+
+Return JSON with EXACTLY this shape:
+{
+  "questions": array of exactly ${count} objects: {
+    "id": "q1"..."q${count}",
+    "type": one of "MCQ", "Scenario", "Situational", "Technical", "Experience-based",
+    "competency": "${competencies[0]}",
+    "difficulty": "Beginner" | "Intermediate" | "Advanced",
+    "prompt": string,
+    "options": array of exactly 4 strings for MCQ / Scenario / Situational (empty array for Experience-based),
+    "correctAnswer": integer index 0-3 for MCQ / Scenario / Situational (-1 for Experience-based),
+    "guidance": string (what a strong answer must cover)
+  }
+}`
+    : `Create an adaptive skill assessment for a ${role} candidate for Recognition of Prior Learning (RPL).
 
 Competency framework: ${competencies.join('; ')}.
 ${weakCompetencies.length ? `Competencies with weaker evidence (prioritize these): ${weakCompetencies.join('; ')}.` : ''}
@@ -278,7 +311,7 @@ Candidate's experience summary (use it to personalize experience-based questions
 ${experienceText.slice(0, 1200) || '(none provided)'}
 """
 
-Generate 5 questions that TOGETHER cover:
+Generate ${count} questions that TOGETHER cover:
 - 2 MCQ (multiple-choice, 4 options, one correct)
 - 1 Scenario question (a realistic workplace problem — for a ${role})
 - 1 Situational question (what would you do before/during X)
@@ -288,7 +321,7 @@ Difficulty: start at Beginner, then Intermediate, then one Advanced question tar
 
 Return JSON with EXACTLY this shape:
 {
-  "questions": array of exactly 5 objects: {
+  "questions": array of exactly ${count} objects: {
     "id": "q1"..."q5",
     "type": one of "MCQ", "Scenario", "Situational", "Technical", "Experience-based",
     "competency": string (one of the framework competencies),
@@ -319,14 +352,81 @@ Scenario/Situational questions must have 4 options with a clearly best answer. E
           correctAnswer: options.length === 4 && Number.isInteger(idx) && idx >= 0 && idx <= 3 ? idx : -1,
           guidance: str(q?.guidance),
         };
-      })
-      .filter((q) => q.prompt)
-      .slice(0, 6);
-    if (questions.length < 3) throw new Error('Too few usable questions');
+      })    .filter((q) => q.prompt)
+    .slice(0, count);
+    if (questions.length < Math.min(3, count)) throw new Error('Too few usable questions');
     res.json({ questions, source: 'ai', model: aiStatus().model });
   } catch (err) {
     console.error('[rpl/questions] AI call failed, using fallback:', err.message);
-    res.json({ questions: fallbackQuestions(role, competencies, weakCompetencies, language, 5), source: 'local', model: 'Built-in assessment engine' });
+    res.json({ questions: fallbackQuestions(role, competencies, weakCompetencies, language, count), source: 'local', model: 'Built-in assessment engine' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Combined analysis across ALL completed per-competency assessments.
+// Called only after every competency run is assessed.
+// ---------------------------------------------------------------------------
+
+router.post('/interview/combined-analysis', async (req, res) => {
+  const role = str(req.body?.role);
+  const competencyResults = (Array.isArray(req.body?.competencyResults) ? req.body.competencyResults : [])
+    .map((r) => ({
+      competency: str(r?.competency),
+      scorePercent: Math.max(0, Math.min(100, Math.round(Number(r?.scorePercent) || 0))),
+      answeredCount: Math.max(0, Math.round(Number(r?.answeredCount) || 0)),
+      totalQuestions: Math.max(0, Math.round(Number(r?.totalQuestions) || 0)),
+    }))
+    .filter((r) => r.competency);
+  const mappings = (Array.isArray(req.body?.mappings) ? req.body.mappings : [])
+    .map((m) => ({ competency: str(m?.competency), evidence: str(m?.evidence, 'Not detected'), status: str(m?.status, 'Not Yet Demonstrated') }))
+    .filter((m) => m.competency);
+
+  if (!role || competencyResults.length === 0) {
+    return res.status(400).json({ error: 'Role and competency results are required.' });
+  }
+
+  const userPrompt = `Every competency assessment of an RPL candidate (occupation "${role}") is now complete. Analyze the COMBINED results.
+
+Per-competency results (score 0-100 = AI Assessment Indicator):
+${competencyResults.map((r) => `- ${r.competency}: ${r.scorePercent}% (${r.answeredCount}/${r.totalQuestions} questions)`).join('\n')}
+
+Competency mapping from evidence:
+${mappings.map((m) => `- ${m.competency}: ${m.status} (evidence: ${m.evidence})`).join('\n') || '- none'}
+
+Write a combined analysis across ALL competency assessments together. Plain, respectful language for a worker with limited formal education. This is an AI-assisted preliminary indicator — never an official result.
+
+Return JSON with EXACTLY this shape:
+{
+  "summary": string (3-5 sentences: what the combined results show overall, strongest and weakest areas, what this preliminary result means),
+  "strengths": array of 2-4 short strings (competencies or abilities that clearly came through),
+  "improvements": array of 2-4 short strings (specific areas needing more evidence or practice, with a concrete suggestion each)
+}`;
+
+  try {
+    const text = await callLLM(`${RPL_RULES}\n\n${SYSTEM_PROMPT}`, userPrompt);
+    const raw = extractJson(text);
+    const summary = str(raw?.summary);
+    if (!summary) throw new Error('Empty summary');
+    res.json({
+      summary,
+      strengths: listOf(raw?.strengths, 5),
+      improvements: listOf(raw?.improvements, 5),
+      source: 'ai',
+      model: aiStatus().model,
+    });
+  } catch (err) {
+    console.error('[rpl/combined-analysis] AI call failed, using fallback:', err.message);
+    const sorted = [...competencyResults].sort((a, b) => b.scorePercent - a.scorePercent);
+    const strong = sorted.filter((r) => r.scorePercent >= 60).map((r) => r.competency);
+    const weak = sorted.filter((r) => r.scorePercent < 60).map((r) => r.competency);
+    const avg = Math.round(competencyResults.reduce((s, r) => s + r.scorePercent, 0) / competencyResults.length);
+    res.json({
+      summary: `All ${competencyResults.length} competency assessments are complete, with a combined preliminary indicator of ${avg}%.${strong.length ? ` Your strongest areas were ${strong.slice(0, 3).join(', ')}.` : ''}${weak.length ? ` Areas needing more evidence or practice: ${weak.slice(0, 3).join(', ')}.` : ''} An authorized RPL assessor makes the final decision — use this as preparation.`,
+      strengths: strong.slice(0, 4),
+      improvements: weak.slice(0, 4),
+      source: 'local',
+      model: 'Built-in assessment engine',
+    });
   }
 });
 

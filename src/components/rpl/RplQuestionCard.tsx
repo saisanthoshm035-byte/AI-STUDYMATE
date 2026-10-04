@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Brain, ChevronRight, Loader2, Mic, MicOff, Send } from 'lucide-react';
+import { Brain, ChevronRight, Loader2, LogOut, Mic, MicOff, Send } from 'lucide-react';
 import type { AnswerEvaluation, RplQuestion } from '../../rpl/types';
 import { RPL_DISCLAIMER } from '../../rpl/types';
 import { AiDisclaimer } from './SkillAnalysis';
@@ -12,6 +12,8 @@ interface Props {
   evaluation: AnswerEvaluation | null;
   onSubmit: (payload: { text?: string; chosen?: number }) => void;
   onNext: () => void;
+  /** Self-paced: leave this competency's assessment now, progress saved. */
+  onExit?: () => void;
 }
 
 /** Optional voice capture via the browser SpeechRecognition API (if available). */
@@ -54,7 +56,7 @@ const DIFF_TONE: Record<string, string> = {
   Advanced: 'border-bad-soft bg-bad-soft text-bad',
 };
 
-export default function RplQuestionCard({ question, index, total, evaluating, evaluation, onSubmit, onNext }: Props) {
+export default function RplQuestionCard({ question, index, total, evaluating, evaluation, onSubmit, onNext, onExit }: Props) {
   const [text, setText] = useState('');
   const [chosen, setChosen] = useState<number | null>(null);
   const { listening, supported, toggle } = useDictation((t) => setText((prev) => (prev ? `${prev} ${t}` : t)));
@@ -77,6 +79,12 @@ export default function RplQuestionCard({ question, index, total, evaluating, ev
           <span className="pill text-[11px]">{question.type}</span>
         </span>
       </div>
+      {onExit && (
+        <button onClick={onExit} className="btn btn-ghost btn-md mt-2 text-xs" title="Save progress and continue later">
+          <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+          Save & continue later
+        </button>
+      )}
 
       <section className="card mt-3 p-6 sm:p-8" aria-label="Assessment question">
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">{question.competency}</p>

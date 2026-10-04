@@ -44,8 +44,19 @@ export const rplApi = {
     weakCompetencies: string[];
     experienceText: string;
     language: string;
+    /** Total number of questions wanted (defaults to the classic 5). */
+    count?: number;
   }): Promise<{ questions: RplQuestion[] }> {
     return post('/api/rpl/questions', input);
+  },
+
+  /** Combined analysis across every completed competency assessment. */
+  combinedAnalysis(input: {
+    role: string;
+    competencyResults: { competency: string; scorePercent: number; answeredCount: number; totalQuestions: number }[];
+    mappings: { competency: string; evidence: string; status: string }[];
+  }): Promise<{ summary: string; strengths: string[]; improvements: string[] }> {
+    return post('/api/rpl/interview/combined-analysis', input);
   },
 
   evaluateAnswer(input: {

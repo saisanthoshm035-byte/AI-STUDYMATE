@@ -132,6 +132,15 @@ export interface RplReportSection {
   body: string[]; // paragraphs / bullet lines
 }
 
+/** Combined analysis across ALL completed per-competency assessments. */
+export interface RplCombinedAnalysis {
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+  source: 'ai' | 'local';
+  model: string;
+}
+
 export interface RplReport {
   intro: string;
   sections: RplReportSection[];
@@ -141,6 +150,26 @@ export interface RplReport {
 }
 
 export type RplAssessmentStatus = 'draft' | 'analyzed' | 'assessed' | 'complete';
+
+/** Status of one competency's self-paced assessment (part of competencyRuns). */
+export type CompetencyRunStatus = 'in-progress' | 'assessed' | 'failed';
+
+/** One competency's own mini-assessment, completed at the candidate's pace. */
+export interface CompetencyAssessment {
+  /** Framework competency this run belongs to. */
+  competency: string;
+  status: CompetencyRunStatus;
+  /** Batch generation state: loading until the questions arrive. */
+  questionsLoading: boolean;
+  /** Question ids in order (the questions themselves live in assessment.questions). */
+  questionIds: string[];
+  /** Load failure reason shown as retry (never while still loading). */
+  loadError: string | null;
+  startedAt: number;
+  completedAt: number | null;
+}
+
+export type CompetencyRuns = Record<string, CompetencyAssessment>;
 
 export interface RplAssessment {
   id: string;
@@ -155,10 +184,14 @@ export interface RplAssessment {
   evidence: RplEvidenceItem[];
   skills: ExtractedSkill[];
   mappings: CompetencyMapping[];
+  /** Per-competency assessment bookkeeping, keyed by competency name. */
+  competencyRuns: CompetencyRuns;
   questions: RplQuestion[];
   answers: RplAnswers;
   gaps: SkillGap | null;
   readiness: ReadinessBreakdown | null;
+  /** Cross-competency analysis, produced once every run is assessed. */
+  combined: RplCombinedAnalysis | null;
   report: RplReport | null;
   assessorReview: { decision: string; notes: string; at: number } | null;
 }
