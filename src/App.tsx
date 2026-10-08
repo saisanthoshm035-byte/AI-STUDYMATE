@@ -14,6 +14,7 @@ import TeachBack from './components/TeachBack';
 import Progress from './components/Progress';
 import ErrorScreen from './components/ErrorScreen';
 import RplApp from './components/rpl/RplApp';
+import ForgeApp from './components/forge/ForgeApp';
 import { api } from './lib/api';
 import { demoAdapt, demoLesson, demoRetry, demoReview } from './lib/demoFallback';
 import { buildRetentionReport } from './lib/retention';
@@ -428,14 +429,17 @@ export default function App() {
         onGoHome={() => go('landing')}
         onGoProgress={() => go('progress')}
         onGoRpl={() => go('rpl')}
+        onGoForge={() => go('forge')}
       />
 
       <main className="flex-1">
         {screen === 'landing' && (
-          <Landing status={aiStatus} onStart={() => goSetup()} onPickTopic={(t) => goSetup(t)} onGoRpl={() => go('rpl')} />
+          <Landing status={aiStatus} onStart={() => goSetup()} onPickTopic={(t) => goSetup(t)} onGoRpl={() => go('rpl')} onGoForge={() => go('forge')} />
         )}
 
         {screen === 'rpl' && <RplApp onHome={() => go('landing')} />}
+
+        {screen === 'forge' && <ForgeApp onHome={() => go('landing')} />}
 
         {screen === 'assessor' && <RplApp onHome={() => go('landing')} startInAssessor />}
 

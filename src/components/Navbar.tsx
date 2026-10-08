@@ -7,9 +7,10 @@ interface NavbarProps {
   onGoHome: () => void;
   onGoProgress: () => void;
   onGoRpl: () => void;
+  onGoForge: () => void;
 }
 
-export default function Navbar({ status, onStartLearning, onGoHome, onGoProgress, onGoRpl }: NavbarProps) {
+export default function Navbar({ status, onStartLearning, onGoHome, onGoProgress, onGoRpl, onGoForge }: NavbarProps) {
   const scrollTo = (id: string) => {
     onGoHome();
     setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 60);
@@ -24,6 +25,7 @@ export default function Navbar({ status, onStartLearning, onGoHome, onGoProgress
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {[
+            { label: 'Job Simulation', action: onGoForge },
             { label: 'Learn', action: onStartLearning },
             { label: 'RPL Assessment', action: onGoRpl },
             { label: 'Progress', action: onGoProgress },
@@ -32,7 +34,7 @@ export default function Navbar({ status, onStartLearning, onGoHome, onGoProgress
             <button
               key={label}
               onClick={action}
-              className={`sf-navlink rounded-lg px-3 py-2 text-sm font-medium ${label === 'RPL Assessment' ? 'font-semibold text-white' : ''}`}
+              className={`sf-navlink rounded-lg px-3 py-2 text-sm font-medium ${label === 'Job Simulation' ? 'font-semibold text-white' : ''}`}
             >
               {label}
             </button>
@@ -41,7 +43,7 @@ export default function Navbar({ status, onStartLearning, onGoHome, onGoProgress
 
         <div className="flex items-center gap-2.5">
           <AiBadge status={status} className="hidden sm:inline-flex" />
-          <button onClick={onGoRpl} className="btn sf-btn-primary btn-md">RPL Assessment</button>
+          <button onClick={onGoForge} className="btn sf-btn-primary btn-md">Job Simulation</button>
         </div>
       </div>
     </header>

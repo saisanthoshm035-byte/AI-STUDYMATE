@@ -12,6 +12,7 @@ interface LandingProps {
   onStart: () => void;
   onPickTopic: (topic: string) => void;
   onGoRpl: () => void;
+  onGoForge: () => void;
 }
 
 const CYCLE = [
@@ -72,11 +73,55 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-export default function Landing({ status, onStart, onPickTopic, onGoRpl }: LandingProps) {
+export default function Landing({ status, onStart, onPickTopic, onGoRpl, onGoForge }: LandingProps) {
   const live = status?.configured ?? false;
 
   return (
     <div className="sf-page">
+      {/* ================= SKILLFORGE HERO (new core positioning) ================= */}
+      <section id="skillforge" className="relative overflow-hidden py-16">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-24 right-[10%] h-[24rem] w-[24rem] rounded-full bg-cyan-500/15 blur-[110px] sf-float" />
+          <div className="absolute bottom-0 left-[5%] h-[20rem] w-[20rem] rounded-full bg-fuchsia-600/15 blur-[100px] sf-float" style={{ animationDelay: '3s' }} />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center">
+            <span className="sf-badge sf-badge-hot">
+              <Zap className="h-3.5 w-3.5" aria-hidden="true" />
+              SKILLFORGE AI · From certificates and resumes to demonstrated capability
+            </span>
+            <h1 className="mx-auto mt-6 max-w-4xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
+              Don't test what they know.
+              <span className="sf-shimmer block">Test what they can do.</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300/90">
+              AI-powered <em className="not-italic text-white">adaptive job simulation</em> — the AI creates realistic
+              occupational problems, watches your decisions, changes the scenario, finds the boundary of your competency,
+              and shows the evidence. Not a questionnaire. Not a certificate generator.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
+              <button onClick={onGoForge} className="sf-btn-primary btn btn-xl">
+                Start Job Simulation
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <a href="#why-skillforge" className="sf-btn-ghost btn btn-xl">Why a simulation?</a>
+            </div>
+            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                { v: '6', l: 'difficulty levels, adapted live' },
+                { v: '100%', l: 'deterministic safety rules' },
+                { v: '0', l: 'opaque AI hiring scores' },
+                { v: '1', l: 'tap to evidence trail' },
+              ].map((s) => (
+                <div key={s.l} className="sf-stat">
+                  <div className="sf-shimmer font-display text-2xl font-extrabold">{s.v}</div>
+                  <div className="mt-0.5 text-[11px] leading-tight text-slate-400">{s.l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
       {/* ================= HERO ================= */}
       <section className="sf-hero relative overflow-hidden">
         {/* aurora backdrop */}
@@ -376,11 +421,67 @@ export default function Landing({ status, onStart, onPickTopic, onGoRpl }: Landi
         </div>
       </section>
 
+      {/* ================= WHY SKILLFORGE (differentiation) ================= */}
+      <section id="why-skillforge" className="relative py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="sf-badge">
+                <FlaskConical className="h-3.5 w-3.5 text-cyan-300" aria-hidden="true" />
+                The core differentiator
+              </span>
+              <h2 className="mt-5 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Why a job simulation?
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-4">
+            {[
+              { t: 'Traditional Certification', m: 'Qualification completion', d: 'A certificate says a course was finished — not that the job can be done.' },
+              { t: 'Generic AI Assessment', m: 'Answers / predicted scores', d: 'Question banks measure recall and produce opaque numbers.' },
+              { t: 'Training Marketplace', m: 'Training + job ecosystem', d: 'Courses and gigs — the assessment layer stays the same old tests.' },
+            ].map((c, i) => (
+              <Reveal key={c.t} delay={i * 80}>
+                <div className="sf-card h-full p-5 opacity-75">
+                  <div className="font-display text-sm font-extrabold text-slate-300">{c.t}</div>
+                  <div className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">Measures: {c.m}</div>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-400">{c.d}</p>
+                </div>
+              </Reveal>
+            ))}
+            <Reveal delay={240}>
+              <div className="sf-card sf-card-hot relative h-full p-5">
+                <span className="absolute -top-3 left-4 sf-badge sf-badge-hot">SKILLFORGE</span>
+                <div className="pt-1 font-display text-sm font-extrabold text-white">Adaptive Job Simulation</div>
+                <div className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300">Measures: performance inside the job</div>
+                <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  Realistic scenarios that branch on every decision, deterministic safety gates, competency boundaries with
+                  an auditable evidence trail, and targeted micro-interventions — then reassessment.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={120}>
+            <div className="mx-auto mt-10 max-w-3xl sf-card p-6 text-center">
+              <div className="text-xs font-bold tracking-[0.12em] text-slate-500">OLD MODEL</div>
+              <p className="mt-1.5 text-sm text-slate-400">Knowledge → test → score → certificate</p>
+              <div className="my-4 h-px bg-slate-700/60" />
+              <div className="text-xs font-bold tracking-[0.12em] text-cyan-300">SKILLFORGE</div>
+              <p className="mt-1.5 text-sm text-slate-200">
+                Job scenario → action → consequence → adaptive scenario → competency boundary → targeted intervention → reassessment
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ================= FOOTER ================= */}
       <footer className="sf-strip py-7">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-[13px] text-slate-500 sm:flex-row sm:px-6">
-          <span>AI StudyMate — Learn. Test. Adapt. Master. · Now with RPL Skill Assessment: Turn Your Experience Into Recognized Skills.</span>
-          <span>It learns from your mistakes and changes how it teaches.</span>
+          <span>SKILLFORGE AI — Don't test what they know. Test what they can do. · AI Adaptive Job Simulation & Workforce Skill Intelligence</span>
+          <span>Applications: Recruitment · Upskilling · Reskilling · Internal mobility · Apprenticeship · RPL pre-assessment</span>
         </div>
       </footer>
     </div>

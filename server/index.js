@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import aiRouter from './routes/ai.js';
 import rplRouter from './routes/rpl.js';
+import forgeRouter from './routes/forge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json({ limit: '1mb' }));
 
 app.use('/api', aiRouter);
 app.use('/api/rpl', rplRouter);
+app.use('/api/forge', forgeRouter);
 
 // Serve the built frontend in production (npm run build && npm start)
 const distDir = path.resolve(__dirname, '../dist');

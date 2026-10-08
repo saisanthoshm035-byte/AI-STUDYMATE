@@ -89,7 +89,9 @@ export type Screen =
   | 'review'
   // RPL skill assessment layer (additive — existing screens untouched)
   | 'rpl'
-  | 'assessor';
+  | 'assessor'
+  // SKILLFORGE AI — job simulation layer (additive — existing screens untouched)
+  | 'forge';
 
 // ---------------------------------------------------------------------------
 // Intelligence layer (additive): confidence, teach-back, retention
