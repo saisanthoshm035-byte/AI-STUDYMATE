@@ -19,6 +19,8 @@ import type { ForgeResults, ForgeSession, MicroBridgePlan } from '../../forge/ty
 
 interface ForgeAppProps {
   onHome: () => void;
+  /** When provided, immediately deep-links into this simulation mode (used by landing-page CTAs). */
+  initialMode?: 'demo' | 'standard' | 'bench';
 }
 
 type View =
@@ -45,8 +47,15 @@ const FORGE_WAY = [
   'Reassessment — measure the improvement',
 ];
 
-export default function ForgeApp({ onHome }: ForgeAppProps) {
-  const [view, setView] = useState<View>({ stage: 'select' });
+export default function ForgeApp({ onHome, initialMode }: ForgeAppProps) {
+  const [view, setView] = useState<View>(() =>
+    initialMode
+      ? { stage: 'sim', session: createSession(
+          'ev-service-technician',
+          initialMode === 'standard' ? 'standard' : 'demo',
+          initialMode === 'bench' ? BENCH_CHAIN[0] : initialMode === 'demo' ? DEMO_CHAIN[0] : 'ev-l1-power-loss',
+        ) }
+      : { stage: 'select' });
   const [reskin, setReskin] = useState<ReskinState | null>(null);
   const [previousResults] = useState<ForgeResults[]>(() => loadForgeResults());
 

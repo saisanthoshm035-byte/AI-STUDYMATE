@@ -59,6 +59,8 @@ function makeId(): string {
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
   const [aiStatus, setAiStatus] = useState<AiStatus | null>(null);
+  /** Initial simulation mode when deep-linking straight from the landing page (e.g. the flagship 3D bench). */
+  const [forgeMode, setForgeMode] = useState<'demo' | 'standard' | 'bench' | null>(null);
 
   const [setupInput, setSetupInput] = useState<SetupInput>({
     topic: '',
@@ -117,6 +119,12 @@ export default function App() {
   // ---------------------------------------------------------------- helpers
 
   const go = useCallback((s: Screen) => setScreen(s), []);
+
+  /** Deep-link into the forge with a specific simulation mode (flagship bench entry). */
+  const goForgeMode = useCallback((mode: 'demo' | 'standard' | 'bench') => {
+    setForgeMode(mode);
+    setScreen('forge');
+  }, []);
 
   const goSetup = useCallback((presetTopic = '') => {
     setSetupInput((prev) => ({ ...prev, topic: presetTopic || prev.topic }));
@@ -434,12 +442,12 @@ export default function App() {
 
       <main className="flex-1">
         {screen === 'landing' && (
-          <Landing status={aiStatus} onStart={() => goSetup()} onPickTopic={(t) => goSetup(t)} onGoRpl={() => go('rpl')} onGoForge={() => go('forge')} />
+          <Landing status={aiStatus} onStart={() => goSetup()} onPickTopic={(t) => goSetup(t)} onGoRpl={() => go('rpl')} onGoForge={() => goForgeMode('demo')} onGoBench={() => goForgeMode('bench')} />
         )}
 
         {screen === 'rpl' && <RplApp onHome={() => go('landing')} />}
 
-        {screen === 'forge' && <ForgeApp onHome={() => go('landing')} />}
+        {screen === 'forge' && <ForgeApp onHome={() => go('landing')} initialMode={forgeMode ?? undefined} />}
 
         {screen === 'assessor' && <RplApp onHome={() => go('landing')} startInAssessor />}
 

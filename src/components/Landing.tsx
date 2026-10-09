@@ -13,6 +13,8 @@ interface LandingProps {
   onPickTopic: (topic: string) => void;
   onGoRpl: () => void;
   onGoForge: () => void;
+  /** Deep-link straight into the 3D Virtual Equipment Bench (flagship demo). */
+  onGoBench: () => void;
 }
 
 const CYCLE = [
@@ -73,7 +75,7 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-export default function Landing({ status, onStart, onPickTopic, onGoRpl, onGoForge }: LandingProps) {
+export default function Landing({ status, onStart, onPickTopic, onGoRpl, onGoForge, onGoBench }: LandingProps) {
   const live = status?.configured ?? false;
 
   return (
@@ -100,15 +102,19 @@ export default function Landing({ status, onStart, onPickTopic, onGoRpl, onGoFor
               and shows the evidence. Not a questionnaire. Not a certificate generator.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
-              <button onClick={onGoForge} className="sf-btn-primary btn btn-xl">
-                Start Job Simulation
+              <button onClick={onGoBench} className="sf-btn-primary btn btn-xl" data-testid="landing-bench-cta">
+                ⚡ Launch the 3D Equipment Bench
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </button>
-              <a href="#why-skillforge" className="sf-btn-ghost btn btn-xl">Why a simulation?</a>
+              <button onClick={onGoForge} className="sf-btn-ghost btn btn-xl">
+                Start Job Simulation
+              </button>
+              <a href="#bench-flagship" className="sf-btn-ghost btn btn-xl">See the bench</a>
             </div>
+            <p className="mt-3 text-xs text-slate-500">No login. No forms. The machine opens and you work it — EV pack bench first, fan rig next.</p>
             <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
               {[
-                { v: '6', l: 'difficulty levels, adapted live' },
+                { v: '2', l: '3D equipment benches, live now' },
                 { v: '100%', l: 'deterministic safety rules' },
                 { v: '0', l: 'opaque AI hiring scores' },
                 { v: '1', l: 'tap to evidence trail' },
@@ -122,6 +128,101 @@ export default function Landing({ status, onStart, onPickTopic, onGoRpl, onGoFor
           </div>
         </div>
       </section>
+      {/* ================= FLAGSHIP: 3D VIRTUAL EQUIPMENT BENCH ================= */}
+      <section id="bench-flagship" className="relative overflow-hidden py-16">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[15%] top-10 h-[18rem] w-[18rem] rounded-full bg-cyan-500/12 blur-[100px] sf-float" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center">
+            <span className="sf-badge sf-badge-hot">
+              <Zap className="h-3.5 w-3.5" aria-hidden="true" />
+              FLAGSHIP · 3D VIRTUAL EQUIPMENT BENCH
+            </span>
+            <h2 className="mx-auto mt-5 max-w-3xl font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              Not a form. Not an MCQ.
+              <span className="sf-shimmer block">A machine you have to work.</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-300/90">
+              Open the bench. Pull the disconnect. Verify 0 V. Scan the busbar. Swap the capacitor.
+              Every click physically changes the equipment — and the AI records what your hands did,
+              not what a form says.
+            </p>
+          </div>
+
+          {/* -------- animated 3D mini-bench trailer -------- */}
+          <div className="mx-auto mt-10 max-w-4xl sf-card sf-card-hot overflow-hidden p-5" data-testid="landing-bench-trailer">
+            <svg viewBox="0 0 600 260" className="w-full" role="img" aria-label="Animated 3D preview of the virtual equipment bench">
+              <defs>
+                <radialGradient id="tr-hot">
+                  <stop offset="0" stopColor="#f97316" stopOpacity="0.85" />
+                  <stop offset="1" stopColor="#f97316" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+              {/* workbench slab */}
+              <polygon points="60,210 480,210 540,190 120,190" fill="#273449" stroke="#334155" />
+              <polygon points="60,210 120,190 120,196 60,216" fill="#141b26" />
+              <polygon points="480,210 540,190 540,196 480,216" fill="#0e1319" />
+              {/* HV pack: 8 extruded cells, cell 7 red */}
+              {Array.from({ length: 8 }).map((_, i) => {
+                const cx = 150 + i * 34;
+                const red = i === 6;
+                return (
+                  <g key={i}>
+                    <polygon points={`${cx},120 ${cx + 22},120 ${cx + 30},112 ${cx + 8},112`} fill={red ? '#7f1d1d' : '#0e3a5c'} stroke={red ? '#ef4444' : '#155e75'} strokeWidth="1" className={red ? 'animate-pulse' : ''} />
+                    <polygon points={`${cx},120 ${cx + 22},120 ${cx + 22},154 ${cx},154`} fill={red ? '#3f1d1d' : '#08203a'} stroke="#0c2a44" />
+                    <text x={cx + 11} y={108} textAnchor="middle" fontSize="8" className={red ? 'fill-red-300 font-mono' : 'fill-sky-300 font-mono'}>{i + 1}</text>
+                  </g>
+                );
+              })}
+              <text x={300} y={100} textAnchor="middle" fontSize="10" className="fill-slate-400 font-mono">HV PACK · 48 V · 8S</text>
+              {/* isolation links */}
+              <rect x={78} y={168} width={70} height={12} rx="3" className="fill-red-600" />
+              <rect x={108} y={158} width={8} height={12} rx="3" className="fill-slate-200" />
+              <text x={90} y={196} fontSize="8" className="fill-slate-200 font-mono">LINKS CLOSED</text>
+              {/* busbar with pulsing hotspot */}
+              <rect x={200} y={196} width={140} height={8} rx="2" className="fill-orange-500 animate-pulse" />
+              <circle cx={270} cy={190} r={12} fill="url(#tr-hot)" />
+              {/* thermal camera */}
+              <g transform="translate(400 120)">
+                <rect x="-20" y="-16" width="76" height="30" rx="6" className="fill-slate-900 stroke-amber-400" strokeWidth="1.5" />
+                <ellipse cx="-8" cy="-1" rx="10" ry="7" fill="url(#tr-hot)" />
+                <text x="24" y="4" fontSize="7" className="fill-amber-300 font-mono">+18 °C</text>
+              </g>
+              {/* fan mini-rotor with continuous spin */}
+              <g transform="translate(300 40) scale(1 0.5)">
+                <g style={{ animation: 'sf-spin3d 2.2s linear infinite', transformOrigin: 'center' }} opacity="0.85">
+                  {[0, 60, 120, 180, 240, 300].map((deg) => (
+                    <g key={deg} transform={`rotate(${deg})`}>
+                      <polygon points="0,-60 4,-60 9,-10 -4,-10" fill="#94a3b8" stroke="#475569" />
+                    </g>
+                  ))}
+                </g>
+                <ellipse rx="16" ry="16" fill="#cbd5e1" stroke="#64748b" />
+                <ellipse rx="9" ry="9" cy="-4" fill="#f1f5f9" />
+              </g>
+              {/* caption chips */}
+              <text x={60} y={236} fontSize="8" className="fill-slate-400 font-sans">isolation → verify 0 V → thermal scan → swap the failing part → FAULT CLEARED</text>
+            </svg>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+              <span className="sf-chip">🧤 PPE gating</span>
+              <span className="sf-chip">⛔ deterministic isolation rule</span>
+              <span className="sf-chip">🔬 0 V verification</span>
+              <span className="sf-chip">🌡️ thermal evidence</span>
+              <span className="sf-chip">🌀 rotating-parts lockout</span>
+              <span className="sf-chip">🧯 capacitor discharge rule</span>
+            </div>
+            <div className="mt-4 text-center">
+              <button onClick={onGoBench} className="sf-btn-primary btn btn-lg" data-testid="landing-bench-trailer-cta">
+                Work the bench now — no signup
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+          <style>{'@keyframes sf-spin3d { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }'}</style>
+        </div>
+      </section>
+
       {/* ================= HERO ================= */}
       <section className="sf-hero relative overflow-hidden">
         {/* aurora backdrop */}
