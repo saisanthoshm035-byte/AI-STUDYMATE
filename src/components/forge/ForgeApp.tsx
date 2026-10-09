@@ -11,7 +11,7 @@ import MicroBridge from './MicroBridge';
 import { forgeApi } from '../../forge/api';
 import { OCCUPATIONS, getOccupation } from '../../forge/competencies';
 import { DEMO_CHAIN } from '../../forge/scenarios';
-import { CURATED_RESKINS } from '../../forge/scenarios';
+import { CURATED_RESKINS, BENCH_CHAIN } from '../../forge/scenarios';
 import { buildPlanTemplate } from '../../forge/microbridge';
 import { computeResults, createSession, currentNode, type ActionResponse } from '../../forge/engine';
 import { loadForgeResults, saveForgeResults, saveForgeSession } from '../../lib/forgeStorage';
@@ -92,9 +92,13 @@ export default function ForgeApp({ onHome }: ForgeAppProps) {
     };
   }, [view, occupation.name]);
 
-  const startSimulation = useCallback((mode: 'demo' | 'standard') => {
-    const firstNode = mode === 'demo' ? DEMO_CHAIN[0] : 'ev-l1-power-loss';
-    const session = createSession(occupation.id, mode, firstNode);
+  const startSimulation = useCallback((mode: 'demo' | 'standard' | 'bench') => {
+    const firstNode = mode === 'demo' ? DEMO_CHAIN[0] : mode === 'bench' ? BENCH_CHAIN[0] : 'ev-l1-power-loss';
+    const session = createSession(occupation.id, mode === 'bench' ? 'demo' : mode, firstNode);
+    if (mode === 'bench') {
+      // BENCH runs as a visually-joined chain: pack bench → fan bench.
+      session.currentNodeId = BENCH_CHAIN[0];
+    }
     setView({ stage: 'sim', session });
   }, [occupation.id]);
 
@@ -224,6 +228,42 @@ export default function ForgeApp({ onHome }: ForgeAppProps) {
           {occupation.competencies.map((c) => (
             <span key={c.id} className="sf-chip" title={c.description}>{c.icon} {c.name}</span>
           ))}
+        </div>
+      </div>
+
+      {/* -------- futuristic work surfaces: bench sim + SkillVision -------- */}
+      <div className="mt-8 grid gap-4 md:grid-cols-2 max-w-4xl mx-auto">
+        <div className="sf-card sf-card-hot p-5">
+          <div className="flex items-center gap-2 text-xs font-bold tracking-[0.12em] text-cyan-300">
+            <Sparkles className="h-4 w-4" aria-hidden="true" /> VIRTUAL EQUIPMENT BENCH
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Work an interactive <span className="font-bold text-white">HV pack bench</span> (isolation links, cells, hot joint)
+            and a <span className="font-bold text-white">BLDC fan rig</span> (capacitor, windings, rotor). Click zones ON the
+            machine — every action visibly changes the equipment and runs through the same deterministic engine.
+          </p>
+          <button
+            onClick={() => startSimulation('bench')}
+            className="sf-btn-ghost btn btn-md mt-3 w-full"
+            data-testid="forge-start-bench"
+          >
+            ⚡ Start Bench Simulation (equipment-first)
+          </button>
+        </div>
+        <div className="sf-card sf-card-hot p-5">
+          <div className="flex items-center gap-2 text-xs font-bold tracking-[0.12em] text-cyan-300">
+            <Sparkles className="h-4 w-4" aria-hidden="true" /> SKILLVISION · CAMERA-EVIDENCED
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Point a webcam at your real hands or equipment and press <span className="font-bold text-white">"Watch my work"</span>.
+            The AI observes what you physically do — no reading, no forms, no literacy barrier — and records concrete,
+            confidence-tagged workspace observations. Observations are evidence hints for the human assessor,
+            <span className="text-slate-400"> never a verdict or certificate.</span>
+          </p>
+          <div className="mt-3 rounded-lg border border-cyan-400/25 bg-cyan-500/5 px-3 py-2 text-[11px] leading-relaxed text-slate-300">
+            SkillVision activates inside the simulation — every scenario and bench run shows a camera capture strip,
+            so a candidate who cannot read can still be evaluated on what their hands demonstrate.
+          </div>
         </div>
       </div>
 

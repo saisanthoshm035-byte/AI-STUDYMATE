@@ -28,6 +28,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export interface ForgeVisionAnalysis {
+  source: 'ai' | 'unavailable';
+  model?: string;
+  summary: string;
+  observations: { label: string; kind: string; competency?: string; detail: string; confidence: number }[];
+}
+
 export const forgeApi = {
   /** Re-skin a curated scenario. Falls back to the curated variation server-side. */
   reskin: (payload: {
@@ -54,4 +61,8 @@ export const forgeApi = {
     bullets: string[];
     coachTip: string;
   }) => post<{ source: 'ai' | 'curated'; title: string; bullets: string[]; coachTip: string }>('/micro-bridge', payload),
+
+  /** Analyse workspace camera frames (SkillVision). Frames stay on-device; only the JPEG payload goes to the AI. */
+  vision: (payload: { scenarioId: string; competency: string; nodePrompt: string; frames: string[] }) =>
+    post<ForgeVisionAnalysis>('/vision', payload),
 };

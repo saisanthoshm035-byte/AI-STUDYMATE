@@ -10,6 +10,9 @@ import {
 } from 'lucide-react';
 import { applyAction, advance, currentNode, getLiveSystemData, safetyChecklist } from '../../forge/engine';
 import { forgeApi } from '../../forge/api';
+import { isBenchNode } from '../../forge/scenarios';
+import VirtualBench from './VirtualBench';
+import SkillVision from './SkillVision';
 import { listenOnce, speak, speechSupport, stopSpeaking, type RecognitionLang } from '../../lib/forgeSpeech';
 import type { ForgeSession } from '../../forge/types';
 import type { ActionResponse } from '../../forge/engine';
@@ -166,6 +169,17 @@ export default function Simulator({ session, reskin, onSessionChange, onActionAp
         </div>
       )}
 
+      {/* ---------------- virtual equipment bench (when the node is bench-mode) ---------------- */}
+      {isBenchNode(node.id) && (
+        <VirtualBench
+          benchKind={node.bench}
+          session={session}
+          liveData={liveData}
+          onZoneAction={(actionId) => onAction(actionId)}
+          disabled={pending !== null}
+        />
+      )}
+
       {/* ---------------- customer report + live data ---------------- */}
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="sf-card p-5">
@@ -310,6 +324,9 @@ export default function Simulator({ session, reskin, onSessionChange, onActionAp
           </div>
         </div>
       )}
+
+      {/* ---------------- SkillVision: watch my work (always available in-sim) ---------------- */}
+      <SkillVision scenarioId={node.id} competency={node.competency} nodePrompt={node.prompt} />
 
       {pending === 'voice' && (
         <div className="mt-3 flex items-center gap-2 text-sm text-slate-400">

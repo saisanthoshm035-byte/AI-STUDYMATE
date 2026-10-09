@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import {
-  CheckCircle2, ChevronDown, ChevronRight, CircleAlert, HelpCircle,
+  CheckCircle2, ChevronDown, ChevronRight, CircleAlert, HelpCircle, Radar,
   ShieldAlert, Sparkles, Target, TrendingUp, Wrench, XCircle,
 } from 'lucide-react';
 import { LEVEL_NAMES } from '../../forge/engine';
@@ -27,6 +27,81 @@ const BAR_COLOR: Record<CompetencyState, string> = {
   'safety-concern': 'bg-red-500',
   'insufficient-evidence': 'bg-sky-400',
 };
+
+/**
+ * SKILL TRAJECTORY RADAR — futuristic projection of where measured evidence
+ * trends. HONESTY FIRST: these bands are a heuristic projection from evidence
+ * count + level spread + consistency, clearly labelled as PROJECTION —
+ * never presented as a certified prediction or an opaque score.
+ */
+export function SkillTrajectory({ results }: { results: ForgeResults }) {
+  const comps = results.competencyResults.filter((r) => r.evidence.length > 0);
+  if (comps.length === 0) return null;
+
+  // Heuristic band: lower/upper bound of plausible growth per competency.
+  // Correct evidence at higher levels widens the band upward; violations pin it down.
+  const axes = comps.map((r) => {
+    const correct = r.evidence.filter((e) => e.verdict === 'correct');
+    const maxLvl = correct.reduce((m, e) => Math.max(m, e.level), 0);
+    const now = r.strength;
+    const grow = (correct.length >= 2 ? 18 : 10) + maxLvl * 2;
+    const cap = r.state === 'safety-concern' ? Math.min(now, 45) : Math.min(100, now + grow);
+    return { name: r.competency.name, now, cap: Math.max(now, cap) };
+  });
+  const n = axes.length;
+  const R = 86;
+  const cx = 130;
+  const cy = 120;
+  const angle = (i: number) => (Math.PI * 2 * i) / n - Math.PI / 2;
+  const pt = (i: number, val: number) => {
+    const a = angle(i);
+    return [cx + Math.cos(a) * R * (val / 100), cy + Math.sin(a) * R * (val / 100)];
+  };
+  const poly = (key: 'now' | 'cap') => axes.map((a, i) => pt(i, a[key]).join(',')).join(' ');
+
+  return (
+    <div className="mt-6 sf-card sf-card-hot p-5" data-testid="forge-trajectory">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-bold tracking-[0.12em] text-cyan-300">
+          <Radar className="h-4 w-4" aria-hidden="true" /> SKILL TRAJECTORY · PROJECTION
+        </div>
+        <span className="sf-chip">2025-fleet · heuristic, not a certified prediction</span>
+      </div>
+      <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+        Inner shape = evidence measured this run. Outer shape = plausible short-term growth if you keep practising
+        the same tasks (micro-bridging, bench repetitions). This is a <span className="font-bold text-cyan-200">projection from
+        your own evidence</span> — not a score, not a certificate, and it does not predict the future.
+      </p>
+      <svg viewBox="0 0 260 240" className="mx-auto mt-2 w-full max-w-md">
+        {[25, 50, 75, 100].map((g) => (
+          <polygon
+            key={g}
+            points={axes.map((_, i) => pt(i, g).join(',')).join(' ')}
+            fill="none"
+            stroke="#1e293b"
+            strokeWidth="1"
+          />
+        ))}
+        {axes.map((a, i) => {
+          const [x, y] = pt(i, 108);
+          return (
+            <text key={a.name} x={x} y={y} textAnchor="middle" fontSize="7" className="fill-slate-400 font-sans">
+              {a.name.split(' ').slice(0, 2).join(' ')}
+            </text>
+          );
+        })}
+        {/* projected band: outer */}
+        <polygon points={poly('cap')} className="fill-cyan-500/10 stroke-cyan-400/60" strokeWidth="1.5" strokeDasharray="4 3" data-testid="forge-trajectory-band" />
+        {/* measured: inner */}
+        <polygon points={poly('now')} className="fill-cyan-500/25 stroke-cyan-300" strokeWidth="2" data-testid="forge-trajectory-now" />
+      </svg>
+      <div className="mt-1 flex items-center justify-center gap-4 text-[11px] text-slate-400">
+        <span className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-sm bg-cyan-300" aria-hidden="true" /> measured</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-sm bg-cyan-500/40" aria-hidden="true" /> projected band</span>
+      </div>
+    </div>
+  );
+}
 
 function EvidenceRow({ result }: { result: CompetencyResult }) {
   if (result.evidence.length === 0) {
@@ -91,6 +166,9 @@ export default function ForgeResultsView({ results, bridge, onStartMicroBridge, 
           </div>
         )}
       </div>
+
+      {/* --------------- skill trajectory radar (projection) --------------- */}
+      <SkillTrajectory results={results} />
 
       {/* --------------- skill map --------------- */}
       <div className="mt-6 space-y-3">

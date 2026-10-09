@@ -77,6 +77,13 @@ export interface ScenarioNode {
   actions: SimAction[];
   /** Fallback node when the chosen action has no explicit `next`. 'stay' = multi-step scenario. */
   next?: string | null | 'stay';
+  /**
+   * When set, the UI renders the interactive Virtual Equipment Bench
+   * (visually-joined SVG equipment) instead of the text-only panel.
+   * Actions still run through the same deterministic engine — the bench is
+   * presentation, judgement stays expert-defined.
+   */
+  bench?: 'ev-pack' | 'fan' | null;
   /** Optional lower-pressure retry node when the candidate chooses an incorrect action. */
   onIncorrect?: string;
   /**
@@ -210,4 +217,26 @@ export interface BridgeComparison {
   message: string;
   beforeState: CompetencyState;
   afterState: CompetencyState;
+}
+
+// ---------------------------------------------------- SkillVision camera capture
+
+export type VisionKind = 'safety' | 'skill' | 'cleanup' | 'note';
+
+/** One AI-generated observation from workspace camera frames. Never a verdict on its own. */
+export interface VisionObservation {
+  label: string;
+  kind: VisionKind;
+  /** Competency id from the occupation graph where relevant (best-effort mapping). */
+  competency?: string;
+  detail: string;
+  /** 0–1 self-reported confidence. Shown as a chip, never as a score. */
+  confidence: number;
+}
+
+export interface VisionAnalysis {
+  source: 'ai' | 'unavailable';
+  model?: string;
+  summary: string;
+  observations: VisionObservation[];
 }

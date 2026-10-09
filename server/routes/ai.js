@@ -248,6 +248,48 @@ export async function callLLM(system, user) {
   throw lastErr;
 }
 
+/**
+ * Vision call: multimodal analysis of image frames (data URLs).
+ * Uses Gemini (the only vision-capable provider currently configured) and
+ * falls back gracefully; SKILLFORGE treats vision output as OBSERVATIONS,
+ * never as verdicts or scores.
+ */
+export async function callVision(system, user, imageDataUrls) {
+  const key = (env.GEMINI_API_KEY || env.GOOGLE_API_KEY || '').trim();
+  if (!key) throw new Error('NO_VISION_PROVIDER');
+  const model = (env.GEMINI_VISION_MODEL || env.GEMINI_MODEL || 'gemini-1.5-flash').trim().split(',')[0];
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  const parts = [{ text: user }];
+  for (const dataUrl of (imageDataUrls || []).slice(0, 3)) {
+    const m = /^data:image\/(jpeg|jpg|png);base64,(.+)$/i.exec(String(dataUrl));
+    if (m) parts.push({ inline_data: { mime_type: `image/${m[1].toLowerCase()}`, data: m[2] } });
+  }
+  if (parts.length === 1) throw new Error('NO_IMAGE_DATA');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 45000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: 'user', parts }],
+        generationConfig: { temperature: 0.4, responseMimeType: 'application/json' },
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`Gemini vision returned ${res.status}: ${body.slice(0, 300)}`);
+    }
+    const data = await res.json();
+    const text = (data?.candidates?.[0]?.content?.parts || []).map((p) => p.text || '').join('');
+    if (!text.trim()) throw new Error('Empty vision response');
+    return { text, model };  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export const SYSTEM_PROMPT = `You are an adaptive educational tutor inside an app called AI StudyMate.
 
 Your job is to teach the requested topic at the learner's selected level.

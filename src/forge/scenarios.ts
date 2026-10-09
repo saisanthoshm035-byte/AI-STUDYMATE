@@ -708,6 +708,190 @@ export const SCENARIOS: Record<string, ScenarioNode> = {
   },
 
   // --------------------------------------- Micro-bridge chain: charging-systems
+  // --------------------------------------------------- Virtual equipment bench
+  // Not a question list: these nodes render an interactive SVG bench
+  // (cells, busbars, fan motor) and every action visibly changes the bench.
+
+  'ev-bench-hv-pack': {
+    id: 'ev-bench-hv-pack',
+    level: 5,
+    competency: 'electrical-safety',
+    title: 'BENCH SIM · Damaged Pack Diagnostic',
+    bench: 'ev-pack',
+    customerReport:
+      'No customer report — this is a defective pack on your bench. The AI camera and the components react to what you do, not what you say.',
+    systemData: [
+      { label: 'Pack voltage', value: '52.4 V (unisolated!)', status: 'alert' },
+      { label: 'Cell-7 vs others', value: '2.98 V · 0.92 V sag', status: 'alert' },
+      { label: 'Busbar joint 2', value: 'hot discoloration', status: 'warn' },
+      { label: 'Case', value: 'hairline crack near vent', status: 'warn' },
+    ],
+    tools: [PPE, INSULATED, METER, VISUAL],
+    prompt: 'Work the bench in order: safety first, then test, then the failing part. The bench shows the consequence of every step.',
+    actions: [
+      {
+        id: 'bench-wear-ppe',
+        label: 'Clamp the insulating mat & put on Class-0 gloves + goggles',
+        icon: '🧤',
+        competency: 'electrical-safety',
+        completes: ['HV_PPE'],
+        verdict: 'correct',
+        capabilities: ['Protects self before contact'],
+        response: 'Mat clamped, gloves on. The bench safety monitor turns the HV indicators from red to amber — you are workable.',
+        next: 'stay',
+      },
+      {
+        id: 'bench-isolate',
+        label: 'Pull the disconnect handle — open the isolation links',
+        icon: '⛔',
+        competency: 'electrical-safety',
+        completes: ['HV_ISOLATION'],
+        verdict: 'correct',
+        capabilities: ['Isolates stored energy before testing'],
+        response: 'Links open with a click. Pack bus ES 0 V across the isolation gap — the bench HV alarm clears.',
+        dataChanges: { 'Pack voltage': '0 V across gap — isolated' },
+        next: 'stay',
+      },
+      {
+        id: 'bench-verify',
+        label: 'Meter the isolated side — prove 0 V at the terminals',
+        icon: '🔬',
+        competency: 'electrical-safety',
+        requires: ['HV_ISOLATION', 'HV_PPE'],
+        completes: ['HV_VERIFY'],
+        verdict: 'correct',
+        capabilities: ['Verifies de-energised state before contact'],
+        response: 'CAT III meter: 0.0 V, twice. The bench moves a green VERIFIED tag onto the terminal block.',
+        dataChanges: { 'Terminals': '0 V verified ×2' },
+        next: 'stay',
+      },
+      {
+        id: 'bench-test-busbar',
+        label: 'Thermal-scan the busbar joints under a controlled 5 A load',
+        icon: '🌡️',
+        competency: 'fault-isolation',
+        requires: ['HV_ISOLATION', 'HV_PPE', 'HV_VERIFY'],
+        verdict: 'correct',
+        capabilities: ['Finds the hot joint before touching components'],
+        response: 'Joint 2 reads +18 °C over its neighbours at 5 A — hot spot confirmed by measurement, not by eye.',
+        dataChanges: { 'Busbar joint 2': '+18 °C hotspot at 5 A' },
+        next: 'ev-bench-fan-diagnose',
+      },
+      {
+        id: 'bench-pull-cell7',
+        label: 'Pull cell-7 out and test it on the bench analyser',
+        icon: '🔋',
+        competency: 'fault-isolation',
+        requires: ['HV_ISOLATION', 'HV_PPE', 'HV_VERIFY'],
+        verdict: 'suboptimal',
+        capabilities: [],
+        response: 'The cell analyser says cell-7 is 92% healthy — a healthy cell in a group that sags together usually means a connection fault, not the cell. Scan the joints first.',
+        next: 'stay',
+      },
+      {
+        id: 'bench-touch-live',
+        label: 'Reach straight across the busbars to re-seat the suspect joint',
+        icon: '🙌',
+        competency: 'electrical-safety',
+        verdict: 'suboptimal',
+        capabilities: [],
+        response: 'Bench alarm: contact attempt on a live bus. Isolate, suit up, verify 0 V — the bench will not let this become a shortcut.',
+        next: 'stay',
+      },
+    ],
+    next: 'ev-bench-fan-diagnose',
+    source: 'curated',
+  },
+
+  'ev-bench-fan-diagnose': {
+    id: 'ev-bench-fan-diagnose',
+    level: 3,
+    competency: 'hand-tool-skill',
+    title: 'BENCH SIM · Ceiling Fan Mimicking a Motor Fault',
+    bench: 'fan',
+    customerReport:
+      'Workshop test rig: a ceiling fan with an EV-style BLDC drive. Same motor knowledge, different machine. What sequence do you choose?',
+    systemData: [
+      { label: 'Supply', value: '230 V present at switch', status: 'ok' },
+      { label: 'Capacitor', value: '1.8 µF · rated 2.5 µF', status: 'alert' },
+      { label: 'Winding table', value: 'run 3.2 Ω · start 4.1 Ω', status: 'ok' },
+      { label: 'Rotation', value: 'settles ~180 rpm', status: 'warn' },
+    ],
+    tools: [METER, INSULATED, VISUAL],
+    prompt: 'The fan spins slowly and hums. Order the diagnosis yourself — the bench updates as you go. Safety decorates everything.',
+    actions: [
+      {
+        id: 'bench-fan-iso',
+        label: 'Switch off & lock out the supply before touching the rig',
+        icon: '⛔',
+        competency: 'electrical-safety',
+        completes: ['ROTATING_PARTS'],
+        verdict: 'correct',
+        capabilities: ['Stops rotating parts before contact'],
+        response: 'Blades coast to a stop, supply locked out. The rotor diagram dims and shows a STANDED — SAFE tag on the hub.',
+        next: 'stay',
+      },
+      {
+        id: 'bench-fan-bleed-cap',
+        label: 'Discharge the run capacitor through the bleed resistor & verify 0 V',
+        icon: '🧯',
+        competency: 'electrical-safety',
+        requires: ['ROTATING_PARTS'],
+        completes: ['CAPACITOR_DISCHARGE'],
+        verdict: 'correct',
+        capabilities: ['Discharges stored charge before contact'],
+        response: 'Cap bleeds down, meter shows 0 V. The capacitor icon fades from red hazard to grey safe.',
+        next: 'stay',
+      },
+      {
+        id: 'bench-fan-mc-cap',
+        label: 'Meter the capacitor — compare microfarads against the rating',
+        icon: '🔬',
+        competency: 'fault-isolation',
+        requires: ['CAPACITOR_DISCHARGE'],
+        verdict: 'correct',
+        capabilities: ['Compares measured value against rated value'],
+        response: '1.8 µF against a 2.5 µF rating — 28% low. A weak run capacitor drags start torque and speed exactly like this.',
+        dataChanges: { 'Capacitor': '1.8 µF measured — 28% low' },
+        next: 'stay',
+      },
+      {
+        id: 'bench-fan-swap-cap',
+        label: 'Fit the 2.5 µF replacement and power up',
+        icon: '🛠️',
+        competency: 'hand-tool-skill',
+        requires: ['CAPACITOR_DISCHARGE'],
+        verdict: 'correct',
+        capabilities: ['Replaces the measured faulty component'],
+        response: 'New cap seated, leads dressed, cover on. Blades come up to a steady 340 rpm. Bench result: FAULT CLEARED.',
+        dataChanges: { 'Rotation': '340 rpm — nominal' },
+        next: null,
+      },
+      {
+        id: 'bench-fan-condemn-motor',
+        label: 'Condemn the winding — quote a motor rewind',
+        icon: '🧠',
+        competency: 'hand-tool-skill',
+        verdict: 'suboptimal',
+        capabilities: [],
+        response: 'The winding table reads 3.2 Ω / 4.1 Ω — healthy. Measure the cheap part before the expensive one.',
+        next: 'stay',
+      },
+      {
+        id: 'bench-fan-spin-touch',
+        label: 'Grab a blade to turn the motor over while it is still powered',
+        icon: '🙌',
+        competency: 'electrical-safety',
+        verdict: 'suboptimal',
+        capabilities: [],
+        response: 'Bench alarm: rotating parts rule. Blades stop and lock out first — hands never share space with powered rotors.',
+        next: 'stay',
+      },
+    ],
+    next: null,
+    source: 'curated',
+  },
+
   'ev-m1-charging-sim': {
     id: 'ev-m1-charging-sim',
     level: 2,
@@ -898,6 +1082,14 @@ export const ADAPTIVE_POOL: string[] = [
   'ev-l5-hv-safety',
   'ev-l6-complication',
 ];
+
+/** Visually-joined BENCH SIM chain — equipment work, not text questions. */
+export const BENCH_CHAIN: string[] = ['ev-bench-hv-pack', 'ev-bench-fan-diagnose'];
+
+/** Every bench-mode node id, for validation and UI tagging. */
+export function isBenchNode(id: string): boolean {
+  return BENCH_CHAIN.includes(id);
+}
 
 /** Micro-bridge chains keyed by competency. Reassessment always runs LAST. */
 export const BRIDGE_CHAINS: Record<string, { interactive: string; challenge: string; reassessment: string }> = {

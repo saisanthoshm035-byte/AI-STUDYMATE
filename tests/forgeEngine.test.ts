@@ -5,7 +5,7 @@ import {
   advance, applyAction, computeResults, createSession, currentNode, pickAdaptiveNode,
 } from '../src/forge/engine';
 import { buildPlanTemplate, compareReassessment } from '../src/forge/microbridge';
-import { DEMO_CHAIN, getNode, SCENARIOS } from '../src/forge/scenarios';
+import { BENCH_CHAIN, DEMO_CHAIN, getNode, isBenchNode, SCENARIOS } from '../src/forge/scenarios';
 import type { ForgeSession } from '../src/forge/types';
 
 function freshDemoSession(): ForgeSession {
@@ -16,7 +16,7 @@ describe('competency graph', () => {
   it('exposes the EV pilot with 6 competencies and the DEMO OCCUPATION tag', () => {
     const occ = getOccupation('ev-service-technician');
     expect(occ.tag).toBe('DEMO OCCUPATION');
-    expect(occ.competencies).toHaveLength(6);
+    expect(occ.competencies).toHaveLength(7);
     expect(occ.competencies.map((c) => c.id)).toContain('electrical-safety');
   });
 
@@ -207,6 +207,36 @@ describe('micro-bridging', () => {
     expect(getNode('ev-m1-charging-sim').competency).toBe('charging-systems');
     expect(getNode('ev-m2-charging-challenge').competency).toBe('charging-systems');
     expect(getNode('ev-r-charging-reassess').competency).toBe('charging-systems');
+  });
+
+  it('visual bench chain: safety-gated, competency-consistent, and terminates', () => {
+    expect(BENCH_CHAIN).toHaveLength(2);
+    expect(isBenchNode('ev-bench-hv-pack')).toBe(true);
+    expect(isBenchNode('ev-l1-power-loss')).toBe(false);
+    // Both bench nodes declare a bench renderer kind.
+    for (const id of BENCH_CHAIN) {
+      expect(getNode(id).bench).toBeTruthy();
+    }
+    // Pack bench: reaching across the live bus must be gated by the HV chain.
+    const pack = getNode('ev-bench-hv-pack');
+    const risky = pack.actions.find((a) => a.id === 'bench-touch-live');
+    expect(risky?.verdict).toBe('suboptimal');
+    const verify = pack.actions.find((a) => a.id === 'bench-verify');
+    expect(verify?.requires).toContain('HV_ISOLATION');
+    expect(verify?.requires).toContain('HV_PPE');
+    // Fan bench: cap measurement requires the capacitor discharge rule.
+    const fan = getNode('ev-bench-fan-diagnose');
+    expect(fan.actions.find((a) => a.id === 'bench-fan-mc-cap')?.requires).toContain('CAPACITOR_DISCHARGE');
+    expect(fan.actions.find((a) => a.id === 'bench-fan-iso')?.completes).toContain('ROTATING_PARTS');
+    // Every bench next-hop stays inside the chain (or null to end).
+    for (const a of pack.actions) {
+      const nx = a.next ?? pack.next;
+      expect(nx === null || nx === 'ev-bench-fan-diagnose' || nx === 'stay').toBe(true);
+    }
+    for (const a of fan.actions) {
+      const nx = a.next ?? fan.next;
+      expect(nx === null || nx === 'stay').toBe(true);
+    }
   });
 
   it('keeps the BMS challenge inside the bridge chain instead of the adaptive pool', () => {

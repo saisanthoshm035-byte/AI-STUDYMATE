@@ -13,7 +13,7 @@
  */
 
 import { Router } from 'express';
-import { callLLM, extractJson, aiStatus } from './ai.js';
+import { callLLM, callVision, extractJson, aiStatus } from './ai.js';
 
 const router = Router();
 
@@ -185,6 +185,81 @@ Return ONLY JSON:
   } catch (err) {
     console.error('[forge/micro-bridge] AI failed, using curated fallback:', err.message);
     res.json({ source: 'curated', title: str(conceptTitle), bullets: Array.isArray(bullets) ? bullets : [], coachTip: str(coachTip) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 4. SkillVision — workspace camera frames → AI OBSERVATIONS.
+//
+// Frames are analysed by the configured multimodal provider (Gemini). The
+// output is strictly descriptive: what the AI saw in the workspace, tagged
+// with per-observation confidence. It NEVER certifies, scores or decides —
+// observations are evidence hints for the human assessor.
+// ---------------------------------------------------------------------------
+
+const KINDS = new Set(['safety', 'skill', 'cleanup', 'note']);
+
+router.post('/vision', async (req, res) => {
+  const { scenarioId, competency, nodePrompt, frames } = req.body ?? {};
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return res.status(400).json({ error: 'frames array is required.' });
+  }
+  const validFrames = frames.filter((f) => typeof f === 'string' && /^data:image\/(jpeg|jpg|png);base64,/.test(String(f).slice(0, 64)));
+  if (validFrames.length === 0) {
+    return res.status(400).json({ error: 'No decodable image frames provided.' });
+  }
+
+  const system = `You are SkillVision, the workspace-observation layer of SKILLFORGE, an AI job-simulation skill platform.
+You watch short frame sequences of a technician's REAL workspace or hands-on equipment and describe what you observe.
+STRICT RULES:
+- Describe only what is visible in the frames. If the person or equipment is unclear, say so plainly.
+- Assign each observation a kind: "safety" (PPE, isolation, procedures), "skill" (technique, tool handling, ordered workflow), "cleanup" (worksite restoration, tidying), or "note" (anything else relevant).
+- Where a competency id fits, map it to: ${str(competency, 'general workmanship')}.
+- NEVER certify, score, grade or decide anything. You generate OBSERVATIONS ONLY. Confidence per observation is your honest uncertainty, a number between 0 and 1.
+- Assume the frames are of a real worker. Be respectful, concrete and specific.`;
+  const user = `Scenario: ${str(scenarioId)} (competency ${str(competency)}). On-screen prompt was: "${str(nodePrompt)}".
+
+The attached ${validFrames.length} JPEG frames show a technician's workspace, captured about a second apart.
+Return ONLY JSON:
+{
+  "summary": string (1-2 sentences, what the workspace/person appears to be doing overall),
+  "observations": [
+    { "label": string (short noun phrase, max 6 words),
+      "kind": "safety" | "skill" | "cleanup" | "note",
+      "competency": string (best-fit competency id or ""),
+      "detail": string (one concrete sentence about what is visible),
+      "confidence": number (0-1) }
+  ] (2-5 items)
+}`;
+
+  try {
+    const { text, model } = await callVision(system, user, validFrames);
+    const raw = extractJson(text);
+    const observations = (Array.isArray(raw.observations) ? raw.observations : [])
+      .map((o) => ({
+        label: str(o?.label, 'Observation'),
+        kind: KINDS.has(o?.kind) ? o.kind : 'note',
+        competency: str(o?.competency) || undefined,
+        detail: str(o?.detail),
+        confidence: Math.max(0, Math.min(1, Number(o?.confidence) || 0.5)),
+      }))
+      .filter((o) => o.detail)
+      .slice(0, 5);
+    if (observations.length < 1) throw new Error('Malformed vision observations');
+    res.json({
+      source: 'ai',
+      model,
+      summary: str(raw.summary, 'Workspace frames analysed.'),
+      observations,
+    });
+  } catch (err) {
+    console.error('[forge/vision] AI vision failed:', err.message);
+    // Honest fallback: the platform never pretends the camera saw something.
+    res.json({
+      source: 'unavailable',
+      summary: 'AI vision is not available right now (no vision provider configured or the call failed). Decision-based assessment continues fully without it.',
+      observations: [],
+    });
   }
 });
 

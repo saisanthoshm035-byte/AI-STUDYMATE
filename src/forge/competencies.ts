@@ -33,6 +33,18 @@ export const SAFETY_RULES: Record<string, SafetyRule> = {
     name: 'Disable charging before battery intervention',
     detail: 'The charger must be unplugged and charging disabled before opening or testing the battery pack.',
   },
+  ROTATING_PARTS: {
+    id: 'ROTATING_PARTS',
+    name: 'Stop & de-energise rotating parts before contact',
+    detail:
+      'Fan blades, motor shafts and spinning pulleys must be fully stopped and the supply locked out before any hands-on intervention. Rotating equipment never waits for reflexes.',
+  },
+  CAPACITOR_DISCHARGE: {
+    id: 'CAPACITOR_DISCHARGE',
+    name: 'Discharge capacitors & verify with a meter',
+    detail:
+      'Appliance PCBs and motor drive circuits hold lethal charge after power-off. Discharge through a bleed resistor and confirm 0 V before touching the electronics.',
+  },
 };
 
 export const EV_SERVICE_TECHNICIAN: Occupation = {
@@ -71,6 +83,12 @@ export const EV_SERVICE_TECHNICIAN: Occupation = {
       name: 'Charging Systems',
       icon: '🔌',
       description: 'Diagnose chargers, connectors and charging faults end to end.',
+    },
+    {
+      id: 'hand-tool-skill',
+      name: 'Hand-Tool Workmanship',
+      icon: '🛠️',
+      description: 'Safe, ordered, competent physical work on equipment — visible in workspace video and on the virtual bench.',
     },
     {
       id: 'thermal-management',
